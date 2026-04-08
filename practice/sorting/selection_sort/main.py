@@ -1,25 +1,18 @@
-def printV(v):
-    print(v)
-
-def selection_sort_intermediate(v, start, end):
-    if end <= (start + 1):
-        return True
-    # print(f"At start = {start}, end = {end} arr = \t\t\t{v}")
-    min_value = v[start]
-    min_index = start
-    for i in range(start + 1, end):
-        if v[i] < min_value:
-            min_index = i
-            min_value = v[i]
-    if min_index != start:
-        v[min_index] = v[start]
-        v[start] = min_value
-    return selection_sort_intermediate(v, start + 1, end)
-
 def selection_sort(v):
     if len(v) < 2:
         return True
-    return selection_sort_intermediate(v, 0, len(v))
+    end = len(v)
+    for start in range(0, end-1):
+        # print(f"At start = {start}, end = {end} arr = \t\t\t{v}")
+        min_value = v[start]
+        min_index = start
+        for i in range(start + 1, end):
+            if v[i] < min_value:
+                min_index = i
+                min_value = v[i]
+        if min_index != start:
+            v[min_index] = v[start]
+            v[start] = min_value
 
 def main():
     v = [5,3,2,4,9,6,7,1,0,8]
