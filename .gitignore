@@ -2,3 +2,4 @@ main
 *.s
 *.o
 *.exe
+*.swp
