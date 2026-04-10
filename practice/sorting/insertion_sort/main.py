@@ -14,8 +14,10 @@ def insertion_sort(arr) -> (list[int], int, int):
                 break
         new_arr.append(val)
         for k in range(i, index, -1):
-            num_swaps = num_swaps + 1
-            new_arr[k], new_arr[k - 1] = new_arr[k - 1], new_arr[k]
+            # num_swaps = num_swaps + 1
+            # new_arr[k], new_arr[k - 1] = new_arr[k - 1], new_arr[k]
+            new_arr[k] = new_arr[k - 1]
+        new_arr[index] = val
     return (new_arr, num_swaps, num_comps)
 
 
@@ -33,14 +35,14 @@ def main():
             "name": "Reverse sorted (Worst case)",
             "input": [9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
             "expected_output": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            "expected_num_swaps": 45,
+            "expected_num_swaps": 0,
             "expected_num_comparisons": 9,
         },
         {
             "name": "Mixed array",
             "input": [5, 3, 2, 4, 9, 6, 7, 1, 0, 8],
             "expected_output": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            "expected_num_swaps": 22,
+            "expected_num_swaps": 0,
             "expected_num_comparisons": 31,
         },
     ]
