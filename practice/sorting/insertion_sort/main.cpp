@@ -24,21 +24,17 @@ tuple<ints, int, int> insertion_sort(const ints &arr) {
     ints new_arr = {arr[0]};
     auto num_comps = 0, num_swaps = 0;
     for (int i = 1; i < n; ++i) {
-        auto val = arr[i], index = i;
-        for (int j = 0; j < i; ++j) {
-            ++num_comps;
-            if (new_arr[j] > val) {
-                index = j;
-                break;
+        auto val = arr[i], index = i - 1;
+        new_arr.push_back(val);
+        ++num_comps;
+        while (index >= 0 && new_arr[index] > val) {
+            new_arr[index + 1] = new_arr[index];
+            --index;
+            if (index >= 0) {
+                ++num_comps;
             }
         }
-        new_arr.push_back(val);
-        for (int k = i; k > index; --k) {
-            //++num_swaps;
-            // swap(new_arr[k], new_arr[k - 1]);
-            new_arr[k] = new_arr[k - 1];
-        }
-        new_arr[index] = val;
+        new_arr[index + 1] = val;
     }
     return {new_arr, num_swaps, num_comps};
 }
@@ -55,17 +51,17 @@ int main(int argc, char *argv[]) {
          {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
          {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
          0,
-         45},  // tc1
+         9},  // tc1
         {"tc2-reverse-sorted",
          {9, 8, 7, 6, 5, 4, 3, 2, 1, 0},
          {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
          0,
-         9},  // tc2
+         45},  // tc2
         {"tc3-unsorted",
          {5, 3, 2, 4, 9, 6, 7, 1, 0, 8},
          {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
          0,
-         31},  // tc3
+         27},  // tc3
     };
     vector<string> tests_failed;
     for (auto &[name, arr, expected_sorted_arr, expected_num_swaps,

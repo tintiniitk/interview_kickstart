@@ -6,18 +6,16 @@ def insertion_sort(arr) -> (list[int], int, int):
     num_comps = 0
     num_swaps = 0
     for i, val in enumerate(arr[1:n], start=1):
-        index = i
-        for j in range(0, i):
-            num_comps = num_comps + 1
-            if new_arr[j] > val:
-                index = j
-                break
+        val = arr[i]
+        index = i - 1
         new_arr.append(val)
-        for k in range(i, index, -1):
-            # num_swaps = num_swaps + 1
-            # new_arr[k], new_arr[k - 1] = new_arr[k - 1], new_arr[k]
-            new_arr[k] = new_arr[k - 1]
-        new_arr[index] = val
+        num_comps = num_comps + 1
+        while index >= 0 and new_arr[index] > val:
+            new_arr[index + 1] = new_arr[index]
+            index = index - 1
+            if index >= 0:
+                num_comps = num_comps + 1
+        new_arr[index + 1] = val
     return (new_arr, num_swaps, num_comps)
 
 
@@ -29,21 +27,21 @@ def main():
             "input": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             "expected_output": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             "expected_num_swaps": 0,
-            "expected_num_comparisons": 45,
+            "expected_num_comparisons": 9,
         },
         {
             "name": "Reverse sorted (Worst case)",
             "input": [9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
             "expected_output": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             "expected_num_swaps": 0,
-            "expected_num_comparisons": 9,
+            "expected_num_comparisons": 45,
         },
         {
             "name": "Mixed array",
             "input": [5, 3, 2, 4, 9, 6, 7, 1, 0, 8],
             "expected_output": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             "expected_num_swaps": 0,
-            "expected_num_comparisons": 31,
+            "expected_num_comparisons": 27,
         },
     ]
 
