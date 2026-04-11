@@ -16,16 +16,15 @@ ostream &operator<<(ostream &o, const vector<T> &arr) {
     return o;
 }
 
-tuple<ints, int, int> insertion_sort(const ints &arr) {
+tuple<int, int> insertion_sort(ints &arr) {
     if (arr.size() < 2) {
-        return {arr, 0, 0};
+        return {0, 0};
     }
     auto n = arr.size();
-    ints new_arr = {arr[0]};
+    auto &new_arr = arr;
     auto num_comps = 0, num_swaps = 0;
     for (int i = 1; i < n; ++i) {
         auto val = arr[i], index = i - 1;
-        new_arr.push_back(val);
         ++num_comps;
         while (index >= 0 && new_arr[index] > val) {
             new_arr[index + 1] = new_arr[index];
@@ -36,7 +35,7 @@ tuple<ints, int, int> insertion_sort(const ints &arr) {
         }
         new_arr[index + 1] = val;
     }
-    return {new_arr, num_swaps, num_comps};
+    return {num_swaps, num_comps};
 }
 
 int main(int argc, char *argv[]) {
@@ -68,12 +67,12 @@ int main(int argc, char *argv[]) {
                 expected_num_comparisons] : test_cases) {
         cout << "Running test case " << name << ":" << endl;
         cout << "Before sorting: \t\t\t" << arr << endl;
-        const auto [actual_sorted_arr, num_swaps, num_comparisons] =
-            insertion_sort(arr);
+        const auto [num_swaps, num_comparisons] = insertion_sort(arr);
+        const auto &output_arr = arr;
         cout << "After sorting: \t\t\t\t" << arr << endl;
-        if (actual_sorted_arr != expected_sorted_arr) {
+        if (output_arr != expected_sorted_arr) {
             cerr << "\033[31m"
-                 << "Error: actual_sorted_arr (" << actual_sorted_arr << ") "
+                 << "Error: output_arr (" << output_arr << ") "
                  << "!= expected_sorted_arr (" << expected_sorted_arr << ") "
                  << "\033[0m" << endl;
             tests_failed.emplace_back(name);

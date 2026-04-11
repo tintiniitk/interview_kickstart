@@ -1,22 +1,20 @@
-def insertion_sort(arr) -> (list[int], int, int):
+def insertion_sort(arr) -> (int, int):
     if len(arr) < 2:
-        return (arr, 0, 0)
+        return (0, 0)
     n = len(arr)
-    new_arr = [arr[0]]
     num_comps = 0
     num_swaps = 0
     for i, val in enumerate(arr[1:n], start=1):
         val = arr[i]
         index = i - 1
-        new_arr.append(val)
         num_comps = num_comps + 1
-        while index >= 0 and new_arr[index] > val:
-            new_arr[index + 1] = new_arr[index]
+        while index >= 0 and arr[index] > val:
+            arr[index + 1] = arr[index]
             index = index - 1
             if index >= 0:
                 num_comps = num_comps + 1
-        new_arr[index + 1] = val
-    return (new_arr, num_swaps, num_comps)
+        arr[index + 1] = val
+    return (num_swaps, num_comps)
 
 
 def main():
@@ -50,7 +48,8 @@ def main():
     for tc in test_cases:
         print(f"Running test: {tc['name']}...")
 
-        actual_output, num_swaps, num_comparisons = insertion_sort(tc["input"])
+        num_swaps, num_comparisons = insertion_sort(tc["input"])
+        actual_output = tc["input"]
 
         # 3. assert the results
         if actual_output != tc["expected_output"]:
