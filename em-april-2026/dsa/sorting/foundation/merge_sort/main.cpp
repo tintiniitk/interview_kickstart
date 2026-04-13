@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <tuple>
 #include <vector>
@@ -18,45 +19,44 @@ ostream &operator<<(ostream &o, const vector<T> &arr) {
 
 static int num_comps = 0, num_swaps = 0;
 
-void merge_sort_internal(ints &arr) {
-    int n = arr.size();
-    if (n < 2) {
+void merge_sort_internal(ints &arr, ints &helper, int start, int end) {
+    if (end - start < 2) {
         return;
     }
-    int mid = (n + 1) / 2;
-    auto left = ints(arr.begin(), arr.begin() + mid);
-    auto right = ints(arr.begin() + mid, arr.end());
-    merge_sort_internal(left);
-    merge_sort_internal(right);
-    int i1 = 0, i2 = 0, i = 0;
-    const int n1 = mid, n2 = n - mid;
+    int mid = (start + end + 1) / 2;
+    merge_sort_internal(arr, helper, start, mid);
+    merge_sort_internal(arr, helper, mid, end);
+    int i1 = start, i2 = mid, i = start;
+    const int n1 = mid, n2 = end, n = end;
     while (i1 < n1 && i2 < n2) {
         ++num_comps;
-        if (right[i2] < left[i1]) {
-            arr[i] = right[i2];
+        if (arr[i2] < arr[i1]) {
+            helper[i] = arr[i2];
             ++i2;
         } else {
-            arr[i] = left[i1];
+            helper[i] = arr[i1];
             ++i1;
         }
         ++i;
     }
     while (i1 < n1) {
-        arr[i] = left[i1];
+        helper[i] = arr[i1];
         ++i1;
         ++i;
     }
     while (i2 < n2) {
-        arr[i] = right[i2];
+        helper[i] = arr[i2];
         ++i2;
         ++i;
     }
+    std::copy_n(helper.begin() + start, end - start, arr.begin() + start);
 }
 
 tuple<ints, int, int> merge_sort(const ints &arr) {
     num_swaps = num_comps = 0;
     auto new_arr = arr;
-    merge_sort_internal(new_arr);
+    auto helper = new_arr;
+    merge_sort_internal(new_arr, helper, 0, helper.size());
     return {new_arr, num_swaps, num_comps};
 }
 
@@ -99,23 +99,15 @@ int main(int argc, char *argv[]) {
             tests_failed.emplace_back(name);
             continue;
         }
-        // if (num_swaps != expected_num_swaps) {
-        // cerr << "\033[31m"
-        //<< "Error: num_swaps (" << num_swaps
-        //<< ") != expected_num_swaps (" << expected_num_swaps << ")"
-        //<< "\033[0m" << endl;
-        // tests_failed.emplace_back(name);
-        // continue;
-        //}
         // if (num_comparisons != expected_num_comparisons) {
         // cerr << "\033[31m"
-        //<< "Error: num_comparisons (" << num_comparisons
-        //<< ") != expected_num_comparisons ("
-        //<< expected_num_comparisons << ")"
-        //<< "\033[0m" << endl;
+        // << "Error: num_comparisons (" << num_comparisons
+        // << ") != expected_num_comparisons ("
+        // << expected_num_comparisons << ")"
+        // << "\033[0m" << endl;
         // tests_failed.emplace_back(name);
         // continue;
-        //}
+        // }
     }
     if (tests_failed.size() > 0) {
         cerr << "\033[31m"
