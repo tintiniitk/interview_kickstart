@@ -1,5 +1,23 @@
 import sys
 
+def helper(
+    remaining: list[int],
+    slate: list[int],
+    filled: int,
+    k: int,
+    lastFilledValue: int,
+    ret: list[list[int]],
+):
+    if filled == k:
+        if filled > 0:
+            ret.append(slate[:filled].copy())
+        return
+    for i, x in enumerate(remaining):
+        if x <= lastFilledValue:
+            continue
+        slate[filled] = x
+        helper(remaining[:i] + remaining[i + 1 :], slate, filled + 1, k, x, ret)
+
 
 def find_combinations(n, k) -> list[list[int]]:
     """
@@ -9,30 +27,16 @@ def find_combinations(n, k) -> list[list[int]]:
     Returns:
      list_list_int32
     """
-    # print(f"Called find_combinations({n},{k})")
-    # Write your code here.
-    if k < 0:
-        # print(f"find_combinations({n},{k}) -> ")
-        return list()
-    if k == 0:
-        # print(f"find_combinations({n},{k}) -> [[]]")
-        return [[]]
-    if k > n:
-        # print(f"find_combinations({n},{k}) -> ")
-        return list()
-    ret = find_combinations(n - 1, k)
-    prev_sets_k_minus_one = find_combinations(n - 1, k - 1)
-    for prev_set in prev_sets_k_minus_one:
-        ret.append(prev_set + [n])
-
-    # print(f"find_combinations({n},{k}) -> {ret}")
+    ret = []
+    helper([i for i in range(1, n + 1)], [0] * k, 0, k, 0, ret)
     return ret
 
 
 if __name__ == "__main__":
-    n = 20
-    k = 10
+    n = 5
+    k = 2
     if len(sys.argv) > 2:
         n = int(sys.argv[1])
         k = int(sys.argv[2])
-    print(f"find_combinations({n}, {k}) = {find_combinations(n,k)}")
+    combinations = find_combinations(n,k)
+    # print(f"find_combinations({n}, {k}) = {combinations}")
