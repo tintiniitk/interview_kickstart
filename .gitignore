@@ -3,3 +3,4 @@ main
 *.o
 *.exe
 *.swp
+__pycache__
