@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import sys
 
 
 @dataclass
@@ -91,5 +92,8 @@ if __name__ == "__main__":
         Item("luxury_bag", 1, 2),
     ]
     s = Solution()
-    max_weight = s.fill_sack(items, 5)
-    print(f"max_weight({items}) = {max_weight}")
+    weight_limit = 3
+    if len(sys.argv) > 1:
+        weight_limit = int(sys.argv[1])
+    max_weight = s.fill_sack(items, weight_limit)
+    print(f"max_weight({items}, weight_limit={weight_limit}) = {max_weight}")
