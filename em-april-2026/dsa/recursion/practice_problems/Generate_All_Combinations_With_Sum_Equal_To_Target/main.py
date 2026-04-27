@@ -40,45 +40,8 @@ Constraints:
 
 """
 
-@profile
-def helper(
-    target_sum: int,
-    freq: dict[int, int],
-    unique_nums: list[int],
-    slate: list[int],
-    done: int,
-    filled: int,
-    current_sum: int,
-    ret: list[list[int]],
-):
-    # print(
-        # f"{'.' * done}target_sum={target_sum}, freq={freq}, unique_nums={unique_nums}, slate={slate}, done={done}, filled={filled}, current_sum={current_sum}, ret={ret}"
-    # )
-    if current_sum == target_sum:
-        ret.append(slate[:filled].copy())
-        return
-    if done == len(slate):
-        return
-    next_num = unique_nums[0]
-    next_num_freq = freq[next_num]
-    for i in range(0, next_num_freq + 1):
-        updated_current_sum = current_sum + (next_num * i)
-        if updated_current_sum > target:
-            continue
-        slate[filled : filled + i] = [next_num] * i
-        helper(
-            target_sum,
-            freq,
-            unique_nums[1:],
-            slate,
-            done + next_num_freq,
-            filled + i,
-            updated_current_sum,
-            ret,
-        )
 
-
-@profile
+# @profile
 def generate_all_combinations(arr: list[int], target: int) -> list[list[int]]:
     """
     Args:
@@ -97,23 +60,50 @@ def generate_all_combinations(arr: list[int], target: int) -> list[list[int]]:
             freq[num] = 1
     unique_nums = list(freq.keys())
     ret = []
-    helper(target, freq, unique_nums, [-1] * len(arr), 0, 0, 0, ret)
+    slate = [-1] * len(arr)
+
+    # @profile
+    def helper(
+        unique_num_index: int,
+        filled: int,
+        current_sum: int,
+    ):
+        # print(
+        # f"{'.' * done}target={target}, freq={freq}, unique_nums={unique_nums}, slate={slate}, filled={filled}, current_sum={current_sum}, ret={ret}"
+        # )
+        if current_sum == target:
+            ret.append(slate[:filled].copy())
+            return
+        if unique_num_index == len(unique_nums):
+            return
+        next_num = unique_nums[unique_num_index]
+        next_num_freq = freq[next_num]
+
+        # The case of when next_num is not included in output.
+        helper(unique_num_index + 1, filled, current_sum)
+
+        for i in range(1, next_num_freq + 1):
+            updated_current_sum = current_sum + (next_num * i)
+            if updated_current_sum > target:
+                break
+            slate[filled + i - 1] = next_num
+            helper(
+                unique_num_index + 1,
+                filled + i,
+                updated_current_sum,
+            )
+
+    helper(0, 0, 0)
     return ret
 
 
 if __name__ == "__main__":
-    # arr = [
-        # 1,
-        # 2,
-        # 3,
-        # 1,
-    # ]
-    # target = 2
-    arr = [i+1 for i in range(25)]
+    # arr = [i + 1 for i in range(15)]
+    # target = 100
+    # actual_output = generate_all_combinations(arr, target)
+    # print(f"arr={arr}, actual_output={actual_output}")
+    arr = [i + 1 for i in range(25)]
     target = 300
-    expected_output = [[1, 1], [2]]
     actual_output = generate_all_combinations(arr, target)
-    # print(
-        # f"arr={arr}, expected_output={expected_output}, actual_output={actual_output}"
-    # )
+    print(f"arr={arr}, actual_output={actual_output}")
     pass
