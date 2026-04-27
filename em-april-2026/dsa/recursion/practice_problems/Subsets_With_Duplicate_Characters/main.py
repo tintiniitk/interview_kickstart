@@ -56,6 +56,7 @@ def get_distinct_subsets(s: str) -> list[str]:
      list_str
     """
     # Write your code here.
+    s = "".join(sorted(list(s)))
     freq = {}
     for c in s:
         if c in freq:
