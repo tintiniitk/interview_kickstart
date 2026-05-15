@@ -54,6 +54,8 @@ No snake or ladder starts from a cell where another snake or ladder arrives.
 """
 
 import sys
+import heapq
+from heapq import heappop, heappush
 from line_profiler import profile
 import test00
 import test01
@@ -162,75 +164,25 @@ def minimum_number_of_rolls(n, moves):
                 l.append(teleported_new_pos)
         return ret
 
-    # iterative dfs - runs into recursion limit
+    # DP - djikstra's algorithm
     @profile
-    def min_rolls_from(pos: int) -> int:
-        visiting = set()
-        # visiting = []
-        stack = [(pos, False)]
-        num_rolls = 0
-        min_num_rolls = 1000000000
-        min_path = set()
-        # min_path = []
+    def min_rolls_from(start: int) -> int:
+        min_num_rolls = {start: 0}
         edge_lists = create_edge_lists()
+        pq = [(0, start)]
         print(f"num_edges={sum([len(edge_list) for edge_list in edge_lists])//2}")
-        num_paths_abandoned = 0
-        while stack:
-            pos, is_backtracking = stack.pop()
-            # print(f"{'..'*num_rolls}Removed from stack: {pos}")
-            if is_backtracking:
-                visiting.remove(pos)
-                num_rolls = num_rolls - 1
-                # print(f"{'..'*num_rolls}Backtracked from {pos}. Decremented num_rolls down to {num_rolls}: Path so far = {visiting} in unknown order")
-                # print(f"{'..'*num_rolls}Backtracked from {pos}. Decremented num_rolls down to {num_rolls}: Path so far = {visiting}")
-                continue
-            if pos in visiting:
-                # detected cycle
-                # print(f"found cycle at {pos}, abandoning this branch")
-                continue
+        while pq:
+            num_rolls, pos = heappop(pq)
             if pos == last:
-                # reached the last cell.
-                if num_rolls < min_num_rolls:
-                    min_num_rolls = num_rolls
-                    min_path = visiting | {pos}
-                    # min_path = (visiting + [pos])
-                    print(
-                        f"{'..'*num_rolls}Reached the end through {min_path} in unknown order. Updated min_num_rolls to {min_num_rolls}"
-                        # f"{'..'*num_rolls}Reached the end through {min_path}. Updated min_num_rolls to {min_num_rolls}"
-                    )
-                else:
-                    print(
-                        f"{'..'*num_rolls}Reached the end through {min_path} in some unknown order in {min_num_rolls} rolls, which fails to update min_num_rolls={min_num_rolls}"
-                    )
-                    # print(f"{'..'*num_rolls}Reached the end through {min_path} in {min_num_rolls} rolls, which fails to update min_num_rolls={min_num_rolls}")
-                    ...
+                return num_rolls
+            if num_rolls > min_num_rolls.get(pos, float("inf")):
                 continue
-            if num_rolls >= min_num_rolls - 2:
-                num_paths_abandoned += 1
-                # print(
-                #     f"{'..'*num_rolls}abandoning visiting {visiting|{pos}} because this path won't more efficient than the most efficient known path"
-                # )
-                # print(f"{'..'*num_rolls}abandoning visiting {visiting+[pos]} because this path won't more efficient than the most efficient known path")
-                continue
-            visiting.add(pos)
-            # visiting.append(pos)
-            num_rolls = num_rolls + 1
-            # print(f"{'..'*num_rolls}Visited {pos}. Incremented num_rolls to {num_rolls}: Path so far = {visiting} in unknown order")
-            # print(f"{'..'*num_rolls}Visited {pos}. Incremented num_rolls to {num_rolls}: Path so far = {visiting}")
-            stack.append((pos, True))
-            next_node_candidates = []
-            for teleported_nxt in edge_lists[pos]:
-                if teleported_nxt not in visiting:
-                    next_node_candidates.append(teleported_nxt)
-            for teleported_nxt in sorted(next_node_candidates):
-                # print(f"{'..'*num_rolls}Pushing to stack {teleported_nxt}")
-                stack.append((teleported_nxt, False))
-        print(
-            f"min_num_rolls={min_num_rolls}, through path {min_path} in unknown order"
-        )
-        # print(f"min_num_rolls={min_num_rolls}, through path {min_path}")
-        print(f"num_paths_abandoned={num_paths_abandoned}")
-        return min_num_rolls
+            new_num_rolls = num_rolls + 1
+            for nxt in edge_lists[pos]:
+                if new_num_rolls < min_num_rolls.get(nxt, float("inf")):
+                    min_num_rolls[nxt] = new_num_rolls
+                    heappush(pq, (new_num_rolls, nxt))
+        return -1
 
     return min_rolls_from(0)
 
@@ -246,7 +198,7 @@ if __name__ == "__main__":
             int(arg[:-1]) if not arg[-1].isdigit() else int(arg) for arg in sys.argv[2:]
         ]
     else:
-        test = test10
+        test = test07
         n = test.n
         moves = test.moves
         expected_min_moves = test.expected_min_moves
