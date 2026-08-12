@@ -13,11 +13,8 @@ logging.basicConfig(
 # CREATE A LOGGER INSTANCE
 logger = logging.getLogger(__name__)
 
-from typing import List
-import copy
+from typing import List, Optional, Tuple, Set
 from copy import deepcopy
-import heapq
-from heapq import heappop, heappush, heapify
 
 SIZE = 9
 BOX_SIZE = 3
@@ -62,17 +59,17 @@ def print_int_board(iboard: INT_GRID, title: str = "", level: int = 0) -> str:
 def validate_intermediate_sudoku_iboard(iboard: INT_GRID):
     def verify_row(row: List[int]) -> bool:
         num_unique_non_zero_values = len(set(row) & IDEAL_ROW_SET)
-        num_non_zero_values = len([value for value in row if value in IDEAL_ROW_SET])
+        num_non_zero_values = len(list(filter(lambda value: 1 <= value <= SIZE, row)))
         return num_unique_non_zero_values == num_non_zero_values
 
     for i, row in enumerate(iboard):
         if not verify_row(row):
-            logger.debug(f"Row#{i} = {row} isn't proper")
+            # logger.debug(f"Row#{i} = {row} isn't proper")
             return False
-    for j in range(9):
-        col = [iboard[i][j] for i in range(9)]
+    for j in range(SIZE):
+        col = [iboard[i][j] for i in range(SIZE)]
         if not verify_row(col):
-            logger.debug(f"Col#{j} isn't proper")
+            # logger.debug(f"Col#{j} isn't proper")
             return False
     for sub_cell_i in range(3):
         for sub_cell_j in range(3):
@@ -82,7 +79,7 @@ def validate_intermediate_sudoku_iboard(iboard: INT_GRID):
                 for j in range(3)
             ]
             if not verify_row(sub_cell):
-                logger.debug(f"Sub-cell#({sub_cell_i},{sub_cell_j}) isn't proper")
+                # logger.debug(f"Sub-cell#({sub_cell_i},{sub_cell_j}) isn't proper")
                 return False
     return True
 
@@ -92,7 +89,7 @@ def validate_filled_sudoku_iboard(iboard: INT_GRID):
         if sorted(row) != IDEAL_ROW:
             logger.error(f"Row#{i} = {row} isn't proper")
             return False
-    for j in range(9):
+    for j in range(SIZE):
         col = [iboard[i][j] for i in range(9)]
         if sorted(col) != IDEAL_ROW:
             logger.error(f"Col#{j} isn't proper")
@@ -122,7 +119,6 @@ class Solution:
         """
         iboard = chr_grid_to_int_grid(board)
         level = 0
-        ideal_row = set(IDEAL_ROW)
 
         def possible_values_for_cell(iboard, row, col) -> set[int]:
             nonlocal level
@@ -139,7 +135,7 @@ class Solution:
                         values_already_present.add(
                             iboard[box_i + cell_i][box_j + cell_j]
                         )
-                return ideal_row - values_already_present - {0}
+                return IDEAL_ROW_SET - values_already_present - {0}
             return set()
 
         def unfilled_neighbors_of_cell(iboard, row, col) -> set[tuple[int, int]]:
@@ -165,11 +161,13 @@ class Solution:
                         unfld_nbrs.add((box_i + cell_i, box_j + cell_j))
             return unfld_nbrs - {(row, col)}
 
-        def get_unfilled_cell_pq(iboard: INT_GRID):
-            if not validate_intermediate_sudoku_iboard(iboard):
-                raise ValueError(
-                    f"get_unfilled_cell_pq(): intermediate sudoku grid is invalid: {print_int_board(iboard, "intermediate board")}"
-                )
+        def next_cell_to_fill(
+            iboard: INT_GRID,
+        ) -> Optional[Tuple[int, Tuple[int, int], Set[int]]]:
+            # if not validate_intermediate_sudoku_iboard(iboard):
+            #     raise ValueError(
+            #         f"next_cell_to_fill(): intermediate sudoku grid is invalid: {print_int_board(iboard, "intermediate board")}"
+            #     )
 
             filled_cells = True
             while filled_cells:
@@ -183,17 +181,18 @@ class Solution:
                             num_possible_values_for_cell = len(possible_values)
                             if num_possible_values_for_cell == 1:
                                 iboard[row][col] = possible_values.pop()
-                                logger.debug(
-                                    f"get_unfilled_cell_pq: filled [{row}][{col}] = {iboard[row][col]}"
-                                )
+                                # logger.debug(
+                                #     f"next_cell_to_fill: filled [{row}][{col}] = {iboard[row][col]}"
+                                # )
                                 if not validate_intermediate_sudoku_iboard(iboard):
                                     logger.debug(
-                                        f"last filling caused an invalid sudoku grid, so unfilling it back"
+                                        f"next_cell_to_fill: filling [{row}][{col}] caused an invalid sudoku grid, so aborting this branch."
                                     )
                                     iboard[row][col] = 0
+                                    return (10, (-1, -1), {})
                                 else:
                                     filled_cells = True
-            unfilled_cells = []
+            lowest_unfilled_cell = (SIZE + 1, (-1, -1), {})
             for row in range(SIZE):
                 for col in range(SIZE):
                     cell_value = iboard[row][col]
@@ -201,83 +200,95 @@ class Solution:
                         cell = (row, col)
                         possible_values = possible_values_for_cell(iboard, row, col)
                         num_possible_values_for_cell = len(possible_values)
-                        unfilled_cells.append((num_possible_values_for_cell, cell))
-            if unfilled_cells:
-                heapify(unfilled_cells)
-            return unfilled_cells
+                        if num_possible_values_for_cell == 0:
+                            logger.debug(
+                                f"next_cell_to_fill: [{row}][{col}] has no possible value, so aborting this branch."
+                            )
+                            return (10, (-1, -1), {})
+                        if num_possible_values_for_cell < lowest_unfilled_cell[0]:
+                            lowest_unfilled_cell = (
+                                num_possible_values_for_cell,
+                                cell,
+                                possible_values,
+                            )
+            if not (2 <= lowest_unfilled_cell[0] <= SIZE):
+                return None
+            return lowest_unfilled_cell
 
-        def fill(iboard: INT_GRID, unfilled_cells, level: int = 0) -> bool:
+        def fill(iboard: INT_GRID, level: int = 0) -> bool:
             iter = 0
-            logger.debug(print_int_board(iboard, "fill() called with ", level))
+            logger.debug(
+                print_int_board(iboard, f"fill(level={level}) called with ", level)
+            )
             log_prefix = f"{" "*level}"
             if not validate_intermediate_sudoku_iboard(iboard):
                 if level == 0:
                     logger.error(f"intermediate sudoku grid is invalid")
                 else:
-                    logger.debug(f"intermediate sudoku grid is invalid")
+                    logger.debug(
+                        f"{log_prefix}intermediate sudoku grid is invalid. So aborting this branch."
+                    )
                 return False
-            if unfilled_cells:
-                while unfilled_cells:
-                    num_possible_values_for_cell, unfilled_cell = heappop(
-                        unfilled_cells
+            result = next_cell_to_fill(iboard)
+            if not result:
+                logger.debug(f"{log_prefix}No next_cell_to_fill")
+                return True
+            num_possible_values, next_cell, possible_values = result
+            if (
+                not (2 <= num_possible_values <= SIZE)
+                or not (0 <= next_cell[0] < SIZE)
+                or not (0 <= next_cell[1] < SIZE)
+            ):
+                if level == 0:
+                    logger.error(f"{log_prefix}next_cell_to_fill failed")
+                else:
+                    logger.debug(f"{log_prefix}next_cell_to_fill failed")
+                return False  # nothing more to be done.
+            row, col = next_cell
+            if 1 <= iboard[row][col] <= 9:
+                if level == 0:
+                    logger.error(
+                        "{log_prefix}next-cell returned by next_cell_to_fill is already full"
                     )
-                    row, col = unfilled_cell
-                    if 1 <= iboard[row][col] <= 9:
-                        continue
-                    possible_values_for_unfilled_cell = possible_values_for_cell(
-                        iboard, row, col
+                else:
+                    logger.debug(
+                        "{log_prefix}next-cell returned by next_cell_to_fill is already full"
                     )
-                    num_possible_values_for_cell = len(
-                        possible_values_for_unfilled_cell
-                    )
-                    if num_possible_values_for_cell == 0:
-                        if level == 0:
-                            logger.error(
-                                f"{log_prefix}fill: found zero possible values for unfilled cell: {unfilled_cell}"
-                            )
-                        else:
-                            logger.debug(
-                                f"{log_prefix}fill: found zero possible values for unfilled cell: {unfilled_cell}"
-                            )
-                        return False
-                    unfilled_neighbors = unfilled_neighbors_of_cell(iboard, row, col)
-                    if num_possible_values_for_cell == 1:
-                        temp = iboard[row][col]
-                        iboard[row][col] = possible_values_for_unfilled_cell.pop()
-                        logger.debug(
-                            f"{log_prefix}filled [{row}][{col}] = {iboard[row][col]}"
-                        )
-                        if not validate_intermediate_sudoku_iboard(iboard):
-                            logger.debug(
-                                f"Last filling caused an invalid intermediate sudoku grid, so reverting it ..."
-                            )
-                            iboard[row][col] = temp
-                    else:
-                        iboard_copy = deepcopy(iboard)
-                        for (
-                            possible_value_for_cell
-                        ) in possible_values_for_unfilled_cell:
-                            iboard_copy[row][col] = possible_value_for_cell
-                            unfilled_cells = get_unfilled_cell_pq(iboard_copy)
-                            if not fill(iboard_copy, unfilled_cells, level + 1):
-                                continue
-                            else:
-                                iboard[:] = deepcopy(iboard_copy)
-                                return True
-                        iboard[row][col] = 0
-                        if level == 0:
-                            logger.error(
-                                f"Could not fill cell {unfilled_cell} with any value !"
-                            )
-                        return False
-            return True
+                return False
+            logger.debug(
+                print_int_board(
+                    iboard,
+                    f"{log_prefix}fill(level={level}): after pre-filling: ",
+                    level,
+                )
+            )
+            logger.debug(
+                f"{log_prefix}Next cell to fill: {row},{col} with values={possible_values}"
+            )
+            iboard_copy = deepcopy(iboard)
+            for possible_value in possible_values:
+                logger.debug(
+                    f"{log_prefix}Trying out {possible_value} for {next_cell} ..."
+                )
+                iboard_copy[row][col] = possible_value
+                if not fill(iboard_copy, level + 1):
+                    continue  # try next possible value.
+                else:
+                    iboard[:] = deepcopy(iboard_copy)
+                    return True
+            iboard[row][col] = 0
+            if level == 0:
+                logger.error(
+                    f"{log_prefix}Could not fill cell {next_cell} with any value !"
+                )
+            # else:
+            #     logger.debug(f"{log_prefix}Could not fill cell {next_cell} with any value !")
+            return False
 
-        unfilled_cells = get_unfilled_cell_pq(iboard)
-        logger.debug(f"Initially unfilled_cells={unfilled_cells}")
-        if not fill(iboard, unfilled_cells):
-            raise ValueError(f"Failed to fill grid")
-        board[:] = deepcopy(int_grid_to_chr_grid(iboard))
-        return None
+        if not fill(iboard):
+            raise ValueError(f"failed to fill grid.")
+        board[:] = int_grid_to_chr_grid(iboard)
+        return
 
 
 def Test(board: CHR_GRID, expected: CHR_GRID):
@@ -316,27 +327,51 @@ def Test(board: CHR_GRID, expected: CHR_GRID):
 #         ["3", "4", "5", "2", "8", "6", "1", "7", "9"],
 #     ],
 # )
+# Test(
+#     [
+#         [".", ".", "9", "7", "4", "8", ".", ".", "."],
+#         ["7", ".", ".", ".", ".", ".", ".", ".", "."],
+#         [".", "2", ".", "1", ".", "9", ".", ".", "."],
+#         [".", ".", "7", ".", ".", ".", "2", "4", "."],
+#         [".", "6", "4", ".", "1", ".", "5", "9", "."],
+#         [".", "9", "8", ".", ".", ".", "3", ".", "."],
+#         [".", ".", ".", "8", ".", "3", ".", "2", "."],
+#         [".", ".", ".", ".", ".", ".", ".", ".", "6"],
+#         [".", ".", ".", "2", "7", "5", "9", ".", "."],
+#     ],
+#     [
+#         ["5", "1", "9", "7", "4", "8", "6", "3", "2"],
+#         ["7", "8", "3", "6", "5", "2", "4", "1", "9"],
+#         ["4", "2", "6", "1", "3", "9", "8", "7", "5"],
+#         ["3", "5", "7", "9", "8", "6", "2", "4", "1"],
+#         ["2", "6", "4", "3", "1", "7", "5", "9", "8"],
+#         ["1", "9", "8", "5", "2", "4", "3", "6", "7"],
+#         ["9", "7", "5", "8", "6", "3", "1", "2", "4"],
+#         ["8", "3", "2", "4", "9", "1", "7", "5", "6"],
+#         ["6", "4", "1", "2", "7", "5", "9", "8", "3"],
+#     ],
+# )
 Test(
     [
-        [".", ".", "9", "7", "4", "8", ".", ".", "."],
-        ["7", ".", ".", ".", ".", ".", ".", ".", "."],
-        [".", "2", ".", "1", ".", "9", ".", ".", "."],
-        [".", ".", "7", ".", ".", ".", "2", "4", "."],
-        [".", "6", "4", ".", "1", ".", "5", "9", "."],
-        [".", "9", "8", ".", ".", ".", "3", ".", "."],
-        [".", ".", ".", "8", ".", "3", ".", "2", "."],
-        [".", ".", ".", ".", ".", ".", ".", ".", "6"],
-        [".", ".", ".", "2", "7", "5", "9", ".", "."],
+        [".", ".", ".", "2", ".", ".", ".", "6", "3"],
+        ["3", ".", ".", ".", ".", "5", "4", ".", "1"],
+        [".", ".", "1", ".", ".", "3", "9", "8", "."],
+        [".", ".", ".", ".", ".", ".", ".", "9", "."],
+        [".", ".", ".", "5", "3", "8", ".", ".", "."],
+        [".", "3", ".", ".", ".", ".", ".", ".", "."],
+        [".", "2", "6", "3", ".", ".", "5", ".", "."],
+        ["5", ".", "3", "7", ".", ".", ".", ".", "8"],
+        ["4", "7", ".", ".", ".", "1", ".", ".", "."],
     ],
     [
-        ["5", "1", "9", "7", "4", "8", "6", "3", "2"],
-        ["7", "8", "3", "6", "5", "2", "4", "1", "9"],
-        ["4", "2", "6", "1", "3", "9", "8", "7", "5"],
-        ["3", "5", "7", "9", "8", "6", "2", "4", "1"],
-        ["2", "6", "4", "3", "1", "7", "5", "9", "8"],
-        ["1", "9", "8", "5", "2", "4", "3", "6", "7"],
-        ["9", "7", "5", "8", "6", "3", "1", "2", "4"],
-        ["8", "3", "2", "4", "9", "1", "7", "5", "6"],
-        ["6", "4", "1", "2", "7", "5", "9", "8", "3"],
+        ["8", "5", "4", "2", "1", "9", "7", "6", "3"],
+        ["3", "9", "7", "8", "6", "5", "4", "2", "1"],
+        ["2", "6", "1", "4", "7", "3", "9", "8", "5"],
+        ["7", "8", "5", "1", "2", "6", "3", "9", "4"],
+        ["6", "4", "9", "5", "3", "8", "1", "7", "2"],
+        ["1", "3", "2", "9", "4", "7", "8", "5", "6"],
+        ["9", "2", "6", "3", "8", "4", "5", "1", "7"],
+        ["5", "1", "3", "7", "9", "2", "6", "4", "8"],
+        ["4", "7", "8", "6", "5", "1", "2", "3", "9"],
     ],
 )
