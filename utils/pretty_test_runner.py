@@ -69,6 +69,7 @@ def pretty_test_runner(time_limit_in_sec=None, stop_on_tc_failure=False):
                     except Exception as e:
                         passed = False
                         error_msg = f"Test raised an unhandled exception: {str(e)}"
+                        raise e
             else:
                 # Run standard execution without time limit
                 try:
