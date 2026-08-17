@@ -4,39 +4,39 @@ import sys
 import time
 
 
+def truncate_param(arg, max_str=100, max_seq=10):
+    if isinstance(arg, str):
+        return arg if len(arg) <= max_str else arg[:max_str] + "..."
+    elif isinstance(arg, (list, tuple, set)):
+        truncated_seq = [
+            truncate_param(item, max_str, max_seq) for item in list(arg)[:max_seq]
+        ]
+        if len(arg) > max_seq:
+            truncated_seq.append(f"... (+{len(arg) - max_seq} more)")
+        return truncated_seq if not isinstance(arg, tuple) else tuple(truncated_seq)
+    elif isinstance(arg, dict):
+        truncated_dict = {
+            k: truncate_param(v, max_str, max_seq)
+            for i, (k, v) in enumerate(arg.items())
+            if i < max_seq
+        }
+        if len(arg) > max_seq:
+            truncated_dict["..."] = f"(+{len(arg) - max_seq} keys)"
+        return truncated_dict
+    return arg
+
+
 def pretty_test_runner(time_limit_in_sec=None, stop_on_tc_failure=False):
     """
     Decorator for test functions that formats output, handles timeouts, and optionally
     halts execution on failure.
     """
-
-    def _truncate_arg(arg, max_str=100, max_seq=10):
-        if isinstance(arg, str):
-            return arg if len(arg) <= max_str else arg[:max_str] + "..."
-        elif isinstance(arg, (list, tuple, set)):
-            truncated_seq = [
-                _truncate_arg(item, max_str, max_seq) for item in list(arg)[:max_seq]
-            ]
-            if len(arg) > max_seq:
-                truncated_seq.append(f"... (+{len(arg) - max_seq} more)")
-            return truncated_seq if not isinstance(arg, tuple) else tuple(truncated_seq)
-        elif isinstance(arg, dict):
-            truncated_dict = {
-                k: _truncate_arg(v, max_str, max_seq)
-                for i, (k, v) in enumerate(arg.items())
-                if i < max_seq
-            }
-            if len(arg) > max_seq:
-                truncated_dict["..."] = f"(+{len(arg) - max_seq} keys)"
-            return truncated_dict
-        return arg
-
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             # Replace print("[RUN]") with:
-            fmt_args = [_truncate_arg(a) for a in args]
-            fmt_kwargs = {k: _truncate_arg(v) for k, v in kwargs.items()}
+            fmt_args = [truncate_param(a) for a in args]
+            fmt_kwargs = {k: truncate_param(v) for k, v in kwargs.items()}
 
             args_str = ", ".join(map(str, fmt_args))
             kwargs_str = ", ".join(f"{k}={v}" for k, v in fmt_kwargs.items())

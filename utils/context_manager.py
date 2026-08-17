@@ -16,15 +16,10 @@ def time_limit(seconds):
     # Register the signal handler and set the alarm
     signal.signal(signal.SIGALRM, signal_handler)
 
-    # signal.alarm(seconds)
-
     # Set interval timer (supports float seconds)
     signal.setitimer(signal.ITIMER_REAL, seconds)
     try:
         yield
     finally:
-        # # Disable the alarm if the block completes before the timeout
-        # signal.alarm(0)
-
         # Disable the alarm
         signal.setitimer(signal.ITIMER_REAL, 0)
