@@ -34,14 +34,12 @@ def pretty_test_runner(time_limit_in_sec=None, stop_on_tc_failure=False):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            # Replace print("[RUN]") with:
+            # Print [RUN] <args>
             fmt_args = [truncate_param(a) for a in args]
             fmt_kwargs = {k: truncate_param(v) for k, v in kwargs.items()}
-
             args_str = ", ".join(map(str, fmt_args))
             kwargs_str = ", ".join(f"{k}={v}" for k, v in fmt_kwargs.items())
             all_args_str = ", ".join(filter(None, [args_str, kwargs_str]))
-
             print(f"[RUN] {func.__name__}({all_args_str})")
 
             passed = False
@@ -87,11 +85,11 @@ def pretty_test_runner(time_limit_in_sec=None, stop_on_tc_failure=False):
 
             # Format and print results according to rules
             if passed:
-                print(f"[DONE] ({duration:.3f}s)")
+                print(f"[DONE] ({duration:.6f}s)")
             else:
                 if error_msg:
                     print(f"Error: {error_msg}")
-                print(f"[FAILED] ({duration:.3f}s)")
+                print(f"[FAILED] ({duration:.6f}s)")
 
                 if stop_on_tc_failure:
                     print(
