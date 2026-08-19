@@ -1,6 +1,6 @@
 import signal
 from contextlib import contextmanager
-
+from utils.common import is_debugging
 
 # 1. Define a custom exception for the timeout
 class TimeoutException(Exception):
@@ -10,6 +10,11 @@ class TimeoutException(Exception):
 # 2. Create a context manager to handle the alarm setup and teardown
 @contextmanager
 def time_limit(seconds):
+    # If debugging, bypass the timeout completely.
+    if is_debugging():
+        yield
+        return
+
     def signal_handler(signum, frame):
         raise TimeoutException("Timed out!")
 

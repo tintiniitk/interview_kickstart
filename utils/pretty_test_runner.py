@@ -2,7 +2,7 @@ from functools import wraps
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 import sys
 import time
-
+from utils.common import is_debugging
 
 def truncate_param(arg, max_str=100, max_seq=10):
     if isinstance(arg, str):
@@ -31,6 +31,10 @@ def pretty_test_runner(time_limit_in_sec=None, stop_on_tc_failure=False):
     Decorator for test functions that formats output, handles timeouts, and optionally
     halts execution on failure.
     """
+    # If debugging, ignore the timeout completely.
+    if is_debugging():
+        time_limit_in_sec = None
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
