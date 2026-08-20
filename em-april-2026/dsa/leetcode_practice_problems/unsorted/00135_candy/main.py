@@ -51,7 +51,7 @@ from utils.context_manager import time_limit, TimeoutException
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
-def Test(ratings: List[int], expected: int) -> (bool, str):
+def Test(ratings: List[int], expected: int) -> tuple[bool, str]:
     actual = Solution().candy(ratings)
     if actual != expected:
         return False, f"got={actual}, wanted={expected}"

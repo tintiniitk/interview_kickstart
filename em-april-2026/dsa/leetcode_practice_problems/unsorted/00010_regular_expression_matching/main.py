@@ -1,12 +1,11 @@
 class Solution:
     def isMatch(self, s: str, p: str) -> bool:
-        """ define groups from pattern p.
+        """define groups from pattern p.
         Groups are (a) individual alphabet or a string of alphabets e.g. 'a' or 'abcd', (b) an alphabet followed by *
         e.g. 'a*', or 'b*', (c) just a dot i.e. '.', or (d) dot followed by a start i.e. '.*'
         To create the groups, p is scanned in reverse order for ease of bookkeeping.
         """
         groups = list[str]()
-        len_p = len(p)
         p_rev = list(reversed(p))
         for i, char in enumerate(p_rev):
             if char == "*":
@@ -47,34 +46,28 @@ class Solution:
                 dp[g][c] = dp[g - 1][c - 1] and (group in {".", ".*", char, char + "*"})
                 dp[g][c] |= dp[g - 1][c] and group[-1] == "*"
                 dp[g][c] |= any(
-                    [
-                        (
-                            c > (k - 1)
-                            and dp[g - 1][c - k]
-                            and (
-                                group in {s[c - k : c], ".*"}
-                                or (
-                                    group == s[c - k] + "*"
-                                    and all(
-                                        [s[c - k + j] == s[c - k] for j in range(1, k)]
-                                    )
-                                )
+                    (
+                        c > (k - 1)
+                        and dp[g - 1][c - k]
+                        and (
+                            group in {s[c - k : c], ".*"}
+                            or (
+                                group == s[c - k] + "*"
+                                and all(s[c - k + j] == s[c - k] for j in range(1, k))
                             )
                         )
-                        for k in range(2, 21)
-                    ]
+                    )
+                    for k in range(2, 21)
                 )
                 dp[g][c] |= dp[g][c - 1] and (
                     group == ".*"
                     or any(
-                        [
-                            (
-                                c > k - 1
-                                and group == s[c - k] + "*"
-                                and all([s[c - k + j] == s[c - k] for j in range(1, k)])
-                            )
-                            for k in range(1, 21)
-                        ]
+                        (
+                            c > k - 1
+                            and group == s[c - k] + "*"
+                            and all(s[c - k + j] == s[c - k] for j in range(1, k))
+                        )
+                        for k in range(1, 21)
                     )
                 )
                 # if dp[g][c]:
@@ -82,32 +75,52 @@ class Solution:
         return dp[g][n]
 
 
-def Test(s: str, p: str, expected: bool):
+import sys
+
+from utils.context_manager import TimeoutException, time_limit
+from utils.pretty_test_runner import pretty_test_runner
+
+
+@pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
+def Test(s: str, p: str, expected: bool) -> tuple[bool, str]:
     actual = Solution().isMatch(s, p)
-    assert actual == expected, f"got {actual}, expected {actual} for s='{s}', p='{p}'"
+    if actual != expected:
+        return False, f"got={actual}, wanted={expected}"
+    return True, ""
 
 
-Test("abcd", "ab*cd", True)
-Test("abcd", "a.*.b*cd", True)
-Test("abcd", "a.*.*.*.b*cd", True)
-Test("ab", "a.", True)
-Test("ab", "ab", True)
-Test("ab", "..", True)
-Test("ab", "a.*", True)
-Test("ab", ".*b", True)
-Test("abc", ".bc", True)
-Test("abcd", ".bcd", True)
-Test("aa", "a", False)
-Test("aa", "a*", True)
-Test("ab", ".*", True)
-Test("abcdefghijklmnopqrst", "abcdefghijklmnopqrst", True)
-Test("abcdefghijklmnopqrst", "a*c*.*d*t", True)
-Test("mississippi", "mis*is*p*.", False)
-Test("abcdefghijklmnop", "ab*op", False)
-Test("abbbbbbbbbbbbbbop", "ab*op", True)
-Test("", "", True)
-Test("", "a*", True)
-Test("", "a*b*", True)
-Test("", "a*.*b*", True)
-Test("abcdefghijklmnopqrst", "abcdefghijklmnopqrst", True)
-Test("abcdefghijklmnopqrst", "a.c.*fg...*l.no.q.s.", True)
+def main():
+    try:
+        print("Running tests ...")
+        with time_limit(5):
+            Test(s="abcd", p="ab*cd", expected=True)
+            Test(s="abcd", p="a.*.b*cd", expected=True)
+            Test(s="abcd", p="a.*.*.*.b*cd", expected=True)
+            Test(s="ab", p="a.", expected=True)
+            Test(s="ab", p="ab", expected=True)
+            Test(s="ab", p="..", expected=True)
+            Test(s="ab", p="a.*", expected=True)
+            Test(s="ab", p=".*b", expected=True)
+            Test(s="abc", p=".bc", expected=True)
+            Test(s="abcd", p=".bcd", expected=True)
+            Test(s="aa", p="a", expected=False)
+            Test(s="aa", p="a*", expected=True)
+            Test(s="ab", p=".*", expected=True)
+            Test(s="abcdefghijklmnopqrst", p="abcdefghijklmnopqrst", expected=True)
+            Test(s="abcdefghijklmnopqrst", p="a*c*.*d*t", expected=True)
+            Test(s="mississippi", p="mis*is*p*.", expected=False)
+            Test(s="abcdefghijklmnop", p="ab*op", expected=False)
+            Test(s="abbbbbbbbbbbbbbop", p="ab*op", expected=True)
+            Test(s="", p="", expected=True)
+            Test(s="", p="a*", expected=True)
+            Test(s="", p="a*b*", expected=True)
+            Test(s="", p="a*.*b*", expected=True)
+            Test(s="abcdefghijklmnopqrst", p="abcdefghijklmnopqrst", expected=True)
+            Test(s="abcdefghijklmnopqrst", p="a.c.*fg...*l.no.q.s.", expected=True)
+    except TimeoutException as te:
+        print(f"Tests got timed out: {te}")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
