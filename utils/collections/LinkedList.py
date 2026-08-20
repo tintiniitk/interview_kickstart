@@ -1,5 +1,4 @@
-from typing import Optional
-
+from typing import Optional, Self
 
 # Definition for singly-linked list.
 class ListNode:
@@ -41,6 +40,7 @@ class ListNode:
 
 def main():
     LL = ListNode
+    assert LL(1)
     assert LL(1) != LL(1)
     assert LL(1) is not LL(1)
     assert not LL(1).eq(None)
