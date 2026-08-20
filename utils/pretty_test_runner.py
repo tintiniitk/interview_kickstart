@@ -3,6 +3,8 @@ from concurrent.futures import ThreadPoolExecutor, TimeoutError
 import sys
 import time
 from utils.common import is_debugging
+from utils.time import format_minimal_seconds
+
 
 def truncate_param(arg, max_str=100, max_seq=10):
     if isinstance(arg, str):
@@ -89,11 +91,11 @@ def pretty_test_runner(time_limit_in_sec=None, stop_on_tc_failure=False):
 
             # Format and print results according to rules
             if passed:
-                print(f"[DONE] ({duration:.6f}s)")
+                print(f"[DONE] ({format_minimal_seconds(duration)})")
             else:
                 if error_msg:
                     print(f"Error: {error_msg}")
-                print(f"[FAILED] ({duration:.6f}s)")
+                print(f"[FAILED] ({format_minimal_seconds(duration)})")
 
                 if stop_on_tc_failure:
                     print(
