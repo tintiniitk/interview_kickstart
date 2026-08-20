@@ -1,14 +1,15 @@
-from functools import wraps
-from concurrent.futures import ThreadPoolExecutor, TimeoutError
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, TimeoutError
+from functools import wraps
+
 from utils.common import is_debugging
 from utils.time import format_minimal_seconds
 
 
 def truncate_param(arg, max_str=100, max_seq=10):
     if isinstance(arg, str):
-        return arg if len(arg) <= max_str else arg[:max_str] + "..."
+        return "'" + arg + "'" if len(arg) <= max_str else "'" + arg[:max_str] + "...'"
     elif isinstance(arg, (list, tuple, set)):
         truncated_seq = [
             truncate_param(item, max_str, max_seq) for item in list(arg)[:max_seq]
@@ -50,7 +51,6 @@ def pretty_test_runner(time_limit_in_sec=None, stop_on_tc_failure=False):
 
             passed = False
             error_msg = None
-            timed_out = False
 
             start_time = time.perf_counter()
 
@@ -67,26 +67,17 @@ def pretty_test_runner(time_limit_in_sec=None, stop_on_tc_failure=False):
                             passed = bool(result)
                             error_msg = "Test returned unexpected format (expected tuple: (bool, str))."
                     except TimeoutError:
-                        timed_out = True
                         passed = False
                         error_msg = f"Test timed out after {time_limit_in_sec} seconds."
-                    except Exception as e:
-                        passed = False
-                        error_msg = f"Test raised an unhandled exception: {str(e)}"
-                        raise e
             else:
-                # Run standard execution without time limit
-                try:
-                    result = func(*args, **kwargs)
-                    if isinstance(result, tuple) and len(result) == 2:
-                        passed, error_msg = result
-                    else:
-                        passed = bool(result)
-                        error_msg = "Test returned unexpected format (expected tuple: (bool, str))."
-                except Exception as e:
-                    passed = False
-                    error_msg = f"Test raised an unhandled exception: {str(e)}"
-
+                result = func(*args, **kwargs)
+                if isinstance(result, tuple) and len(result) == 2:
+                    passed, error_msg = result
+                else:
+                    passed = bool(result)
+                    error_msg = (
+                        "Test returned unexpected format (expected tuple: (bool, str))."
+                    )
             duration = time.perf_counter() - start_time
 
             # Format and print results according to rules
