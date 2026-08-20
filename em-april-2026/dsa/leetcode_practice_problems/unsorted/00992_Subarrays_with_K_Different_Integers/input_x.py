@@ -1,5 +1,5 @@
 tc = {
-    "expected":1,
+    "expected":0,
     "k":1000,
     "nums":[
         61,
