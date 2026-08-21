@@ -1,7 +1,9 @@
 import sys
 import time
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from functools import wraps
+from typing import ParamSpec
 
 from utils.common import is_debugging
 from utils.time import format_minimal_seconds
@@ -29,7 +31,12 @@ def truncate_param(arg, max_str=100, max_seq=10):
     return arg
 
 
-def pretty_test_runner(time_limit_in_sec=None, stop_on_tc_failure=False):
+P = ParamSpec("P")
+
+
+def pretty_test_runner(
+    time_limit_in_sec: float | None = None, stop_on_tc_failure: bool | None = False
+):
     """
     Decorator for test functions that formats output, handles timeouts, and optionally
     halts execution on failure.
@@ -38,9 +45,9 @@ def pretty_test_runner(time_limit_in_sec=None, stop_on_tc_failure=False):
     if is_debugging():
         time_limit_in_sec = None
 
-    def decorator(func):
+    def decorator(func: Callable[P, tuple[bool, str]]) -> Callable[P, tuple[bool, str]]:
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> tuple[bool, str]:
             # Print [RUN] <args>
             fmt_args = [truncate_param(a) for a in args]
             fmt_kwargs = {k: truncate_param(v) for k, v in kwargs.items()}
