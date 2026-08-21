@@ -14,7 +14,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 from copy import deepcopy
-from typing import Optional
 
 SIZE = 9
 BOX_SIZE = 3
@@ -163,7 +162,7 @@ class Solution:
 
         def next_cell_to_fill(
             iboard: INT_GRID,
-        ) -> Optional[tuple[int, tuple[int, int], set[int]]]:
+        ) -> tuple[int, tuple[int, int], set[int]] | None:
             # if not validate_intermediate_sudoku_iboard(iboard):
             #     raise ValueError(
             #         f"next_cell_to_fill(): intermediate sudoku grid is invalid: {print_int_board(iboard, "intermediate board")}"
@@ -189,10 +188,10 @@ class Solution:
                                         f"next_cell_to_fill: filling [{row}][{col}] caused an invalid sudoku grid, so aborting this branch."
                                     )
                                     iboard[row][col] = 0
-                                    return (10, (-1, -1), {})
+                                    return (10, (-1, -1), set())
                                 else:
                                     filled_cells = True
-            lowest_unfilled_cell = (SIZE + 1, (-1, -1), {})
+            lowest_unfilled_cell = (SIZE + 1, (-1, -1), set())
             for row in range(SIZE):
                 for col in range(SIZE):
                     cell_value = iboard[row][col]
@@ -204,7 +203,7 @@ class Solution:
                             logger.debug(
                                 f"next_cell_to_fill: [{row}][{col}] has no possible value, so aborting this branch."
                             )
-                            return (10, (-1, -1), {})
+                            return (10, (-1, -1), set())
                         if num_possible_values_for_cell < lowest_unfilled_cell[0]:
                             lowest_unfilled_cell = (
                                 num_possible_values_for_cell,
@@ -216,14 +215,13 @@ class Solution:
             return lowest_unfilled_cell
 
         def fill(iboard: INT_GRID, level: int = 0) -> bool:
-            iter = 0
             logger.debug(
                 print_int_board(iboard, f"fill(level={level}) called with ", level)
             )
             log_prefix = f"{' ' * level}"
             if not validate_intermediate_sudoku_iboard(iboard):
                 if level == 0:
-                    logger.error(f"intermediate sudoku grid is invalid")
+                    logger.error("intermediate sudoku grid is invalid")
                 else:
                     logger.debug(
                         f"{log_prefix}intermediate sudoku grid is invalid. So aborting this branch."
@@ -286,21 +284,20 @@ class Solution:
             return False
 
         if not fill(iboard):
-            raise ValueError(f"failed to fill grid.")
+            raise ValueError("failed to fill grid.")
         board[:] = int_grid_to_chr_grid(iboard)
-        return
 
 
 def Test(board: CHR_GRID, expected: CHR_GRID):
-    print(f"\n[RUN]")
+    print("\n[RUN]")
     orig_board = deepcopy(board)
     logger.info(print_chr_board(orig_board, "Input board", 0))
     logger.info(print_chr_board(expected, "Expected solved board", 0))
     Solution().solveSudoku(board)
     solved = deepcopy(board)
     logger.info(print_chr_board(solved, "Solved board", 0))
-    assert validate_filled_sudoku_board(solved), f"Failed"
-    print(f"[DONE]\n")
+    assert validate_filled_sudoku_board(solved), "Failed"
+    print("[DONE]\n")
 
 
 # Test(

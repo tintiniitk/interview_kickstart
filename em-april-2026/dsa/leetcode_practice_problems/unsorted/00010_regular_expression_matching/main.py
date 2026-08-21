@@ -36,19 +36,21 @@ class Solution:
         dp = [[False for _ in range(n + 1)] for _ in range(g + 1)]
         # by definition, empty string s[:0] matches empty-pattern p[:0].
         dp[0][0] = True
-        for g in range(1, g + 1):
-            group = groups[g - 1]
+        for gi in range(1, g + 1):
+            group = groups[gi - 1]
             # all those patterns match empty string "" which only have groups ending with * in them, e.g. 'a*', or 'a*b*' or 'a*.*b*' etc.
-            dp[g][0] = dp[g - 1][0] and group[-1] == "*"
+            dp[gi][0] = dp[gi - 1][0] and group[-1] == "*"
             for c in range(1, n + 1):
                 char = s[c - 1]
                 # find if the current character in target string s matches the current group in the pattern.
-                dp[g][c] = dp[g - 1][c - 1] and (group in {".", ".*", char, char + "*"})
-                dp[g][c] |= dp[g - 1][c] and group[-1] == "*"
-                dp[g][c] |= any(
+                dp[gi][c] = dp[gi - 1][c - 1] and (
+                    group in {".", ".*", char, char + "*"}
+                )
+                dp[gi][c] |= dp[gi - 1][c] and group[-1] == "*"
+                dp[gi][c] |= any(
                     (
                         c > (k - 1)
-                        and dp[g - 1][c - k]
+                        and dp[gi - 1][c - k]
                         and (
                             group in {s[c - k : c], ".*"}
                             or (
@@ -59,7 +61,7 @@ class Solution:
                     )
                     for k in range(2, 21)
                 )
-                dp[g][c] |= dp[g][c - 1] and (
+                dp[gi][c] |= dp[gi][c - 1] and (
                     group == ".*"
                     or any(
                         (
@@ -70,8 +72,8 @@ class Solution:
                         for k in range(1, 21)
                     )
                 )
-                # if dp[g][c]:
-                #     print(f"{s[:c]} matches {"".join(groups[:g])}")
+                # if dp[gi][c]:
+                #     print(f"{s[:c]} matches {"".join(groups[:gi])}")
         return dp[g][n]
 
 

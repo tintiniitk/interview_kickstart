@@ -28,7 +28,7 @@ def digits2number(digits: list[int]) -> int:
     return n
 
 
-def isPrime(n: int, not_primes: list[int], primes: list[int]) -> bool:
+def isPrime(n: int, not_primes: list[bool], primes: list[bool]) -> bool:
     if not_primes[n]:
         return False
     if primes[n]:

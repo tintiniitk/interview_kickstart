@@ -50,9 +50,10 @@ class Solution:
                     level = level - 1
                 elif nbr != parent_of[node]:
                     print(
-                        f"{'.'*level}node {nbr} is visited twice, once from {node} and once from somewhere else, caught in the neighbor {nbr} of {node}"
+                        f"{'.' * level}node {nbr} is visited twice, once from {node} and once from somewhere else, caught in the neighbor {nbr} of {node}"
                     )
                     return True
+            return False
 
         def bfs(node: int) -> bool:  # Return True if there a cycle
             nonlocal parent_of
@@ -70,6 +71,7 @@ class Solution:
                             f"node {parent} is visited twice, once from {parent_of[parent]} and once from {nbr}, caught in the neighbor {nbr} of {parent}"
                         )
                         return True
+            return False
 
         numConnectedComponents = 0
         for unvisited in range(n):

@@ -10,8 +10,7 @@ class Solution:
         min_positive = 0
         max_positive = 0
         for num in param:
-            if num > max_positive:
-                max_positive = num
+            max_positive = max(max_positive, num)
             if num > 0 and num < min_positive:
                 min_positive = num
         # print(f"min_positive={min_positive}, max_positive={max_positive}")

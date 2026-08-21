@@ -8,7 +8,7 @@ class Solution:
             return [0]
         if not prerequisites:
             return [i for i in range(n)]
-        e = len(prerequisites)
+        # e = len(prerequisites)
         dependencies = [set() for _ in range(n)]
         dependents = [set() for _ in range(n)]
         for prerequisite in prerequisites:
@@ -77,7 +77,6 @@ class Solution:
 import sys
 
 from tc_x import tc as tc_x_tc
-
 from utils.context_manager import TimeoutException, time_limit
 from utils.pretty_test_runner import pretty_test_runner
 

@@ -33,7 +33,7 @@ class StockSpanner:
         return span
 
 
-def operate(operations: list[str], values: list[int]) -> list[int]:
+def operate(operations: list[str], values: list[list[int]]) -> list[int | None]:
     ret = []
     ss = None
     for i, operation in enumerate(operations):
@@ -42,7 +42,9 @@ def operate(operations: list[str], values: list[int]) -> list[int]:
                 ss = StockSpanner()
                 ret.append(None)
             case "next":
-                ret.append(ss.next(values[i]))
+                if not ss:
+                    raise ValueError("next called before StockSpanner!")
+                ret.append(ss.next(values[i][0]))
     return ret
 
 
@@ -54,7 +56,7 @@ from utils.pretty_test_runner import pretty_test_runner
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
 def Test(
-    operations: list[str], values: list[int], expected: list[int]
+    operations: list[str], values: list[list[int]], expected: list[int | None]
 ) -> tuple[bool, str]:
     actual = operate(operations, values)
     if actual != expected:

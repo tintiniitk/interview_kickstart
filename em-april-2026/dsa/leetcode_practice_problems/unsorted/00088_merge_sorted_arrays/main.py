@@ -24,7 +24,6 @@ class Solution:
             nums1[i] = nums2[i2]
             i2 = i2 - 1
             i = i - 1
-        return
 
 
 if __name__ == "__main__":

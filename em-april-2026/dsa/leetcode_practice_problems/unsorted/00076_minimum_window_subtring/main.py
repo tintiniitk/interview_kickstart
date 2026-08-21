@@ -70,7 +70,7 @@ from utils.pretty_test_runner import pretty_test_runner, truncate_param
 
 
 @pretty_test_runner(time_limit_in_sec=0.05, stop_on_tc_failure=False)
-def Test(s: str, t: str, expected: str) -> (bool, str):
+def Test(s: str, t: str, expected: str) -> tuple[bool, str]:
     actual = Solution().minWindow(s, t)
     if actual != expected:
         return (

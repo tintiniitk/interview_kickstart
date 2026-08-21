@@ -112,6 +112,8 @@ class Solution:
                 ):
                     best_superstring = current_fused
 
+        if not best_superstring:
+            raise ValueError("no best_superstring assigned !")
         return best_superstring
 
 
@@ -122,7 +124,7 @@ from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
-def Test(a: str, b: str, c: str, expected: str) -> (bool, str):
+def Test(a: str, b: str, c: str, expected: str) -> tuple[bool, str]:
     actual = Solution().minimumString(a, b, c)
     if actual != expected:
         return False, f"got={actual}, wanted={expected}"

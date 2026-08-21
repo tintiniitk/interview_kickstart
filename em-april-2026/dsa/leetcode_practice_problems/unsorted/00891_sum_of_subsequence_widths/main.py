@@ -20,7 +20,7 @@ class Solution:
         #         count of such sub-sequences = 2 ^ (j-i-1)
         # So, we just need to sum up this remainder for every i,j combination
         cur = 0
-        powers_of_two_modulo_base = dict()
+        powers_of_two_modulo_base = {}
         powers_of_two_modulo_base[0] = 1
         for i in range(1, n):
             powers_of_two_modulo_base[i] = int(
@@ -38,7 +38,7 @@ class Solution:
         #         cur = cur % modulo_base
 
         # Optimal approach based on fused i pairs
-        for i in range(0, n):
+        for i in range(n):
             diff_of_power = int(
                 (powers_of_two_modulo_base[i] - powers_of_two_modulo_base[n - 1 - i])
                 % modulo_base

@@ -24,7 +24,7 @@ class Solution:
                     # print(f"   At end of len(q)>0 having dealt with arr={arr}, q={q}")
                     break
                 if len(arr) < i:
-                    raise f"  Got: len(arr) < i at i={i}"
+                    raise ValueError(f"  Got: len(arr) < i at i={i}")
                 # it's guranteed that len(arr) == i
                 # make all extensions of arr by inserting num in it
                 # make new arr by inserting num at the beginning of arr and insert into q

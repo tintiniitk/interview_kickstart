@@ -58,7 +58,7 @@ from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
-def Test(s: str, expected: bool) -> (bool, str):
+def Test(s: str, expected: bool) -> tuple[bool, str]:
     actual = Solution().checkValidString(s)
     if actual != expected:
         return False, f"got={actual}, wanted={expected}"

@@ -18,14 +18,14 @@ class Solution:
         return res
 
 
-def Test(nums: list[int], maximumBit: int, expected: int):
+def Test(nums: list[int], maximumBit: int, expected: list[int]):
     orig_nums = nums.copy()
-    print(f"[RUN]")
+    print("[RUN]")
     actual = Solution().getMaximumXor(nums, maximumBit)
     assert actual == expected, (
         f"  actual={actual} != expected={expected} for nums={orig_nums}, maximumBit={maximumBit}\n[FAILED]"
     )
-    print(f"[DONE]")
+    print("[DONE]")
 
 
 Test([0, 1, 1, 3], 2, [0, 3, 2, 3])

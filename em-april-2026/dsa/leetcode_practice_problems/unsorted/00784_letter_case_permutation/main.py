@@ -1,4 +1,3 @@
-
 # https://leetcode.com/problems/letter-case-permutation/
 
 """
@@ -24,6 +23,7 @@ s consists of lowercase English letters, uppercase English letters, and digits.
 
 """
 
+
 class Solution:
     def helper(self, s: str, slate: list[str], n: int, ret: list[str]):
         # print(f"{'.'*n}Called helper({s}, {slate}, {n}, {ret})")
@@ -43,9 +43,9 @@ class Solution:
         self.helper(s, [" "] * len(s), 0, ret)
         return ret
 
+
 if __name__ == "__main__":
-	
-    input = "a1b2";
+    input = "a1b2"
     expected_output = ["a1b2", "a1B2", "A1b2", "A1B2"]
     actual_output = Solution().letterCasePermutation(input)
     print(f"expected_output = {expected_output}, actual_output = {actual_output}")

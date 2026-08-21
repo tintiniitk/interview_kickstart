@@ -28,7 +28,6 @@ class Solution:
         # num_comparisons = num_comparisons + 1
 
         while nextPrime < n:
-
             # # profiling
             # num_lookups = num_lookups + 1
             # num_additions = num_additions + 1
@@ -50,7 +49,6 @@ class Solution:
             # num_comparisons = num_comparisons + 1
 
             if nextComposite < n:
-
                 # # profiling
                 # num_comparisons = num_comparisons + 1
                 # num_lookups = num_lookups + 1
@@ -77,7 +75,6 @@ class Solution:
             # num_comparisons = num_comparisons + 2
 
             while nextPrime < n and nums[nextPrime] == 0:
-
                 # # profiling
                 # num_comparisons = num_comparisons + 2
                 # num_lookups = num_lookups + 1
@@ -92,7 +89,7 @@ class Solution:
 
 
 def main():
-    nums = [(i + 1) for i in range(0, 100000)]
+    nums = [(i + 1) for i in range(100000)]
     # print(f"nums = {nums}")
     # nums = [2, 3, 4]
     # nums = [-1, 5, 7, 0]

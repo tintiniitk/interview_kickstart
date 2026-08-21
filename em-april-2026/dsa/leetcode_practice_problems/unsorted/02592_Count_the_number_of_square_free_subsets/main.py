@@ -93,7 +93,7 @@ from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
-def Test(nums: list[int], expected: int) -> (bool, str):
+def Test(nums: list[int], expected: int) -> tuple[bool, str]:
     actual = Solution().squareFreeSubsets(nums)
     if actual != expected:
         return False, f"got={actual}, wanted={expected}"

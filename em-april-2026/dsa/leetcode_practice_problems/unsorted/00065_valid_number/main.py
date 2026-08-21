@@ -4,11 +4,7 @@ import unittest
 # Matches an optional sign, a decimal number (with or without integer/fractional parts),
 # and an optional exponent part (E or e followed by an optional sign and digits).
 NUMBER_MATCHER_REGEX = re.compile(
-    r"^" +
-    r"([\+\-])?" +
-    r"((\d+(\.\d*)?)|(\d*\.\d+))" +
-    r"([Ee][\+\-]?\d+)?" +
-    r"$"
+    r"^" + r"([\+\-])?" + r"((\d+(\.\d*)?)|(\d*\.\d+))" + r"([Ee][\+\-]?\d+)?" + r"$"
 )
 
 

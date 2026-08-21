@@ -29,7 +29,7 @@ class Solution:
             # 2. The Golden Rule of Croaking:
             # A letter can never be counted more times than the letter before
             # it.
-            if (c < r or r < o or o < a or a < k):
+            if c < r or r < o or o < a or a < k:
                 return -1
         # 3. Ensure no frogs are left mid-croak
         if current_frogs == 0:

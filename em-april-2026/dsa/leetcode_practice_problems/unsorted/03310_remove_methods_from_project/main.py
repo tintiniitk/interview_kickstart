@@ -11,12 +11,12 @@ class Solution:
         for invocation in invocations:
             dependent, dependency = invocation[0], invocation[1]
             if dependent not in dependency_methods:
-                dependency_methods[dependent] = set([dependency])
+                dependency_methods[dependent] = {dependency}
             else:
                 dependency_methods[dependent].add(dependency)
             in_degress[dependency] += 1
             out_degress[dependent] += 1
-        suspicious_methods = set([k])
+        suspicious_methods = {k}
 
         # # expensive bfs with cyclicity-check
         # level = 0

@@ -15,11 +15,10 @@ class Solution:
 
 
 def Test(s: str, expected: str):
-    orig_s = "".join(s)
     print(f"[RUN]\n  s='{s}', expected_answer='{expected}'")
     actual = Solution().removeStars(s)
     assert actual == expected, f"  actual='{actual}', expected='{expected}'\n[FAILED]"
-    print(f"[DONE]")
+    print("[DONE]")
 
 
 Test("leet**cod*e", "lecoe")

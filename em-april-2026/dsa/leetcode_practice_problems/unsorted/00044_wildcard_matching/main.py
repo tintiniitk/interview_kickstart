@@ -1,10 +1,7 @@
 class Solution:
     def isMatch(self, s: str, p: str) -> bool:
         if not p:
-            if not s:
-                return True
-            else:
-                return False
+            return not s
         n = len(s)
         m = len(p)
         print(f"n={n}, m={m}, s='{s}', p='{p}'")
@@ -74,11 +71,11 @@ class Solution:
 def Test(s: str, p: str, expected: bool):
     orig_s = "".join(s)
     orig_p = "".join(p)
-    print(f"[RUN]")
+    print("[RUN]")
     actual = Solution().isMatch(s, p)
-    assert (
-        actual == expected
-    ), f"  actual(={actual}) != expected(={expected}) for s='{orig_s}', p='{orig_p}'\n[FAILED]"
+    assert actual == expected, (
+        f"  actual(={actual}) != expected(={expected}) for s='{orig_s}', p='{orig_p}'\n[FAILED]"
+    )
     print(f"[DONE] for s='{orig_s}', p='{orig_p}'")
 
 
