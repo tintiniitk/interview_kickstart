@@ -52,7 +52,7 @@ java:
 
 python py:
 	@if [ ! -f main.py ]; then echo "Error: main.py does not exist"; exit 1; fi
-	@printf '#!/bin/sh\nexec python3 main.py "$$@"\n' > main && chmod +x main
+	@printf '#!/bin/sh\ncd ..\ncd -\nexec python3 main.py "$$@"\n' > main && chmod +x main
 
 clean:
 	rm -f main *.class
