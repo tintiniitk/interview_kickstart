@@ -1,11 +1,9 @@
-from collections import defaultdict
-from typing import List
-from collections import Counter
+from collections import Counter, defaultdict
 
 
 class Solution:
     # my solution
-    def equalPairs(self, grid: List[List[int]]) -> int:
+    def equalPairs(self, grid: list[list[int]]) -> int:
         n = len(grid)
         if n == 1:
             return 1
@@ -17,11 +15,11 @@ class Solution:
         return num_matches
 
 
-def Test(grid: List[List[int]], expected_count: int) -> bool:
+def Test(grid: list[list[int]], expected_count: int) -> bool:
     actual_count = Solution().equalPairs(grid)
-    assert (
-        actual_count == expected_count
-    ), f"actual_count={actual_count} didn't match expected_count={expected_count} for input grid={grid}"
+    assert actual_count == expected_count, (
+        f"actual_count={actual_count} didn't match expected_count={expected_count} for input grid={grid}"
+    )
     return True
 
 

@@ -1,20 +1,19 @@
-from typing import List, Tuple
-
-
 class Solution:
-    def maxMatrixSum(self, matrix: List[List[int]]) -> int:
+    def maxMatrixSum(self, matrix: list[list[int]]) -> int:
         num_neg = sum(cell < 0 for row in matrix for cell in row)
         least_abs_value = min(min(map(abs, row)) for row in matrix)
         sum_of_abs = sum(sum(map(abs, row)) for row in matrix)
         return sum_of_abs - (2 * least_abs_value if num_neg % 2 > 0 else 0)
 
 
-from utils.pretty_test_runner import pretty_test_runner, truncate_param
-from utils.context_manager import time_limit, TimeoutException
+import sys
+
+from utils.context_manager import TimeoutException, time_limit
+from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
-def Test(matrix: List[List[int]], expected: int) -> Tuple[bool, str]:
+def Test(matrix: list[list[int]], expected: int) -> tuple[bool, str]:
     actual = Solution().maxMatrixSum(matrix)
     if actual != expected:
         return False, f"got={actual}, wanted={expected}"
@@ -23,15 +22,13 @@ def Test(matrix: List[List[int]], expected: int) -> Tuple[bool, str]:
 
 def main():
     try:
-        print(f"Running tests ...")
+        print("Running tests ...")
         with time_limit(5):
             Test(matrix=[[1, -1], [-1, 1]], expected=4)
             Test(matrix=[[1, 2, 3], [-1, -2, -3], [1, 2, 3]], expected=16)
     except TimeoutException as te:
         print(f"Tests got timed out: {te}")
-    except Exception as e:
-        print(f"Tests failed: {e}")
-        raise e
+        sys.exit(1)
 
 
 if __name__ == "__main__":

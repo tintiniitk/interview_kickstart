@@ -1,9 +1,6 @@
-from typing import List
 from collections import Counter
-
-from collections import defaultdict
-from itertools import combinations
 from functools import reduce
+from itertools import combinations
 from math import gcd
 
 MOD_BASE = 10**9 + 7
@@ -34,26 +31,23 @@ def safe_power(x: int, n: int) -> int:
     return prod
 
 
-SQUARES = set([4, 9, 16, 25])  # assuming max_num <= 30 as given
-PRIMES = set([2, 3, 5, 7, 11, 13, 17, 19, 23, 29])  # assuming max_num <= 30 as given
+SQUARES = {4, 9, 16, 25}  # assuming max_num <= 30 as given
+PRIMES = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29}  # assuming max_num <= 30 as given
 
 
 class Solution:
-    def squareFreeSubsets(self, nums: List[int]) -> int:
-        n = len(nums)
+    def squareFreeSubsets(self, nums: list[int]) -> int:
         max_num = max(nums)
         min_num = min(nums)
-        numbers_to_ignore = set(
+        numbers_to_ignore = {
             num
             for num in range(min_num, max_num + 1)
             if any(
-                set(
-                    base_square_to_ignore
-                    for base_square_to_ignore in SQUARES
-                    if num % base_square_to_ignore == 0
-                )
+                base_square_to_ignore
+                for base_square_to_ignore in SQUARES
+                if num % base_square_to_ignore == 0
             )
-        )
+        }
         counter = Counter(nums)
         freq_of_1 = counter[1]
         for number_to_ignore in numbers_to_ignore:
@@ -81,9 +75,7 @@ class Solution:
                     # if pair[1] in non_coprimes and pair[0] in non_coprimes[pair[1]]
                     if gcd(pair[0], pair[1]) > 1
                 ):
-                    count = reduce(
-                        safe_multiply, map(lambda num: counter[num], combination)
-                    )
+                    count = reduce(safe_multiply, [counter[num] for num in combination])
                     num_sq_free_subsets = safe_plus(num_sq_free_subsets, count)
 
         num_sq_free_subsets = safe_multiply(multiplier_for_1s, num_sq_free_subsets)
@@ -94,12 +86,14 @@ class Solution:
         return num_sq_free_subsets
 
 
-from utils.pretty_test_runner import pretty_test_runner, truncate_param
-from utils.context_manager import time_limit, TimeoutException
+import sys
+
+from utils.context_manager import TimeoutException, time_limit
+from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
-def Test(nums: List[int], expected: int) -> (bool, str):
+def Test(nums: list[int], expected: int) -> (bool, str):
     actual = Solution().squareFreeSubsets(nums)
     if actual != expected:
         return False, f"got={actual}, wanted={expected}"
@@ -108,7 +102,7 @@ def Test(nums: List[int], expected: int) -> (bool, str):
 
 def main():
     try:
-        print(f"Running tests ...")
+        print("Running tests ...")
         with time_limit(5):
             Test(nums=[3, 4, 4, 5], expected=3)
             Test(nums=[1], expected=1)
@@ -120,9 +114,7 @@ def main():
             Test(nums=[26, 6, 4, 27, 6, 18], expected=3)
     except TimeoutException as te:
         print(f"Tests got timed out: {te}")
-    except Exception as e:
-        print(f"Tests failed: {e}")
-        raise e
+        sys.exit(1)
 
 
 if __name__ == "__main__":

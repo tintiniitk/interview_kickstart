@@ -2,6 +2,7 @@ class Solution:
     def method(self, input_param: int) -> int:
         return 0
 
+
 import sys
 
 from utils.context_manager import TimeoutException, time_limit

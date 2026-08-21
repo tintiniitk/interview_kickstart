@@ -13,13 +13,13 @@ logging.basicConfig(
 # CREATE A LOGGER INSTANCE
 logger = logging.getLogger(__name__)
 
-from typing import List, Optional, Tuple, Set
 from copy import deepcopy
+from typing import Optional
 
 SIZE = 9
 BOX_SIZE = 3
-CHR_GRID = List[List[str]]
-INT_GRID = List[List[int]]
+CHR_GRID = list[list[str]]
+INT_GRID = list[list[int]]
 IDEAL_ROW = list(range(1, SIZE + 1))
 IDEAL_ROW_SET = set(IDEAL_ROW)
 
@@ -43,11 +43,11 @@ def chr_grid_to_int_grid(board: CHR_GRID) -> INT_GRID:
 def print_chr_board(board: CHR_GRID, title: str = "", level: int = 0) -> str:
     s = "\n"
     if title:
-        s += f"{'  '*level}{title} = \n"
-    s += f"{'  '*level}---------------------------------\n"
+        s += f"{'  ' * level}{title} = \n"
+    s += f"{'  ' * level}---------------------------------\n"
     for row in board:
-        s += f"{'  '*level}{' | '.join(row)}\n"
-        s += f"{'  '*level}---------------------------------\n"
+        s += f"{'  ' * level}{' | '.join(row)}\n"
+        s += f"{'  ' * level}---------------------------------\n"
     return s
 
 
@@ -57,7 +57,7 @@ def print_int_board(iboard: INT_GRID, title: str = "", level: int = 0) -> str:
 
 
 def validate_intermediate_sudoku_iboard(iboard: INT_GRID):
-    def verify_row(row: List[int]) -> bool:
+    def verify_row(row: list[int]) -> bool:
         num_unique_non_zero_values = len(set(row) & IDEAL_ROW_SET)
         num_non_zero_values = len(list(filter(lambda value: 1 <= value <= SIZE, row)))
         return num_unique_non_zero_values == num_non_zero_values
@@ -113,7 +113,7 @@ def validate_filled_sudoku_board(board: CHR_GRID):
 
 
 class Solution:
-    def solveSudoku(self, board: List[List[str]]) -> None:
+    def solveSudoku(self, board: list[list[str]]) -> None:
         """
         Do not return anything, modify iboard in-place instead.
         """
@@ -163,7 +163,7 @@ class Solution:
 
         def next_cell_to_fill(
             iboard: INT_GRID,
-        ) -> Optional[Tuple[int, Tuple[int, int], Set[int]]]:
+        ) -> Optional[tuple[int, tuple[int, int], set[int]]]:
             # if not validate_intermediate_sudoku_iboard(iboard):
             #     raise ValueError(
             #         f"next_cell_to_fill(): intermediate sudoku grid is invalid: {print_int_board(iboard, "intermediate board")}"
@@ -220,7 +220,7 @@ class Solution:
             logger.debug(
                 print_int_board(iboard, f"fill(level={level}) called with ", level)
             )
-            log_prefix = f"{" "*level}"
+            log_prefix = f"{' ' * level}"
             if not validate_intermediate_sudoku_iboard(iboard):
                 if level == 0:
                     logger.error(f"intermediate sudoku grid is invalid")

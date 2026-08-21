@@ -1,11 +1,10 @@
-from typing import List
 from collections import deque
 
 
 class Solution:
     def remainingMethods(
-        self, n: int, k: int, invocations: List[List[int]]
-    ) -> List[int]:
+        self, n: int, k: int, invocations: list[list[int]]
+    ) -> list[int]:
         dependency_methods = {}  # int -> set
         in_degress = [0 for _ in range(n)]
         out_degress = [0 for _ in range(n)]
@@ -65,12 +64,12 @@ class Solution:
         return list(remaining_methods)
 
 
-def Test(n: int, k: int, invocations: List[List[int]], expected: List[int]):
+def Test(n: int, k: int, invocations: list[list[int]], expected: list[int]):
     print(f"[RUN]\n  n={n}, k={k}, invocations={invocations}")
     actual = Solution().remainingMethods(n, k, invocations)
-    assert sorted(actual) == sorted(
-        expected
-    ), f"actual={actual}, expected={expected}, for n={n}, k={k}, invocations={invocations}\n[FAILED]"
+    assert sorted(actual) == sorted(expected), (
+        f"actual={actual}, expected={expected}, for n={n}, k={k}, invocations={invocations}\n[FAILED]"
+    )
     print("[DONE]")
 
 

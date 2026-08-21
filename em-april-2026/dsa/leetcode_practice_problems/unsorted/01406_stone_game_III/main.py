@@ -1,8 +1,5 @@
-from typing import List
-
-
 class Solution:
-    def stoneGameIII(self, stoneValue: List[int]) -> str:
+    def stoneGameIII(self, stoneValue: list[int]) -> str:
         n = len(stoneValue)
         if n == 1:
             return (
@@ -19,7 +16,9 @@ class Solution:
                 else (
                     min(dp[i + 2], dp[i + 3])
                     if i <= n - 3
-                    else dp[i + 2] if i <= n - 2 else 0
+                    else dp[i + 2]
+                    if i <= n - 2
+                    else 0
                 )
             )
             if i < n - 1:
@@ -33,7 +32,9 @@ class Solution:
                         else (
                             min(dp[i + 3], dp[i + 4])
                             if i <= n - 4
-                            else dp[i + 3] if i <= n - 3 else 0
+                            else dp[i + 3]
+                            if i <= n - 3
+                            else 0
                         )
                     ),
                 )
@@ -49,25 +50,46 @@ class Solution:
                             else (
                                 min(dp[i + 4], dp[i + 5])
                                 if i <= n - 5
-                                else dp[i + 4] if i <= n - 4 else 0
+                                else dp[i + 4]
+                                if i <= n - 4
+                                else 0
                             )
                         ),
                     )
         return (
             "Alice"
             if dp[0] > sum_stoneValue_by_2
-            else "Bob" if dp[0] < sum_stoneValue_by_2 else "Tie"
+            else "Bob"
+            if dp[0] < sum_stoneValue_by_2
+            else "Tie"
         )
 
 
-def Test(stoneValue, expected):
-    print(f"[RUN]\n  stoneValue={stoneValue}, expected={expected}")
+import sys
+
+from utils.context_manager import TimeoutException, time_limit
+from utils.pretty_test_runner import pretty_test_runner
+
+
+@pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
+def Test(stoneValue: list[int], expected: str) -> tuple[bool, str]:
     s = Solution()
     result = s.stoneGameIII(stoneValue)
-    assert result == expected, f"  Expected {expected}, but got {result}\n[FAILED]"
-    print(f"[DONE]")
+    if result != expected:
+        return False, f"  Expected {expected}, but got {result}\n[FAILED]"
+    return True, ""
 
 
-Test([1, 2, 3, 7], "Bob")
-Test([1, 2, 3, -9], "Alice")
-Test([1, 2, 3, 6], "Tie")
+def main():
+    try:
+        with time_limit(5):
+            Test([1, 2, 3, 7], "Bob")
+            Test([1, 2, 3, -9], "Alice")
+            Test([1, 2, 3, 6], "Tie")
+    except TimeoutException as te:
+        print(te)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

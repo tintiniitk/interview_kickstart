@@ -1,6 +1,3 @@
-from math import exp
-from typing import List, Tuple
-
 from functools import cache
 
 MOD_BASE = 10**9 + 7
@@ -27,12 +24,14 @@ class Solution:
         return (power(num_pairs) * max_num) % MOD_BASE
 
 
-from utils.pretty_test_runner import pretty_test_runner, truncate_param
-from utils.context_manager import time_limit, TimeoutException
+import sys
+
+from utils.context_manager import TimeoutException, time_limit
+from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
-def Test(p: int, expected: int) -> Tuple[bool, str]:
+def Test(p: int, expected: int) -> tuple[bool, str]:
     actual = Solution().minNonZeroProduct(p)
     if actual != expected:
         return False, f"got={actual}, wanted={expected}"
@@ -41,7 +40,7 @@ def Test(p: int, expected: int) -> Tuple[bool, str]:
 
 def main():
     try:
-        print(f"Running tests ...")
+        print("Running tests ...")
         with time_limit(5):
             Test(p=1, expected=1)
             Test(p=2, expected=6)
@@ -52,9 +51,7 @@ def main():
             Test(p=4, expected=581202553)
     except TimeoutException as te:
         print(f"Tests got timed out: {te}")
-    except Exception as e:
-        print(f"Tests failed: {e}")
-        raise e
+        sys.exit(1)
 
 
 if __name__ == "__main__":

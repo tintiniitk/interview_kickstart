@@ -1,12 +1,9 @@
-import math
-from math import isqrt as sqrt
-from typing import List
-from collections import deque
 import heapq
+from math import isqrt as sqrt
 
 
 # digits with LSB...MSB
-def number2digits(n: int) -> List[int]:
+def number2digits(n: int) -> list[int]:
     digits = []
     while n > 0:
         digits.append(n % 10)
@@ -23,7 +20,7 @@ def num_digits_in(n: int) -> int:
 
 
 # digits with LSB...MSB
-def digits2number(digits: List[int]) -> int:
+def digits2number(digits: list[int]) -> int:
     n = 0
     pow = 1
     for digit in digits:
@@ -80,11 +77,7 @@ class Solution:
             cost, i = heapq.heappop(pq)
             # print(f"popped ({i}, {cost}) from q")
             if i == m:
-                if cost < min_cost_so_far:
-                    min_cost_so_far = cost
-                    # print(
-                    #     f"***********************min_cost_so_far updated to {min_cost_so_far}"
-                    # )
+                min_cost_so_far = min(cost, min_cost_so_far)
                 continue
             if cost >= (min_cost_so_far - m):
                 continue
@@ -121,20 +114,38 @@ class Solution:
         return min_cost_so_far if min_cost_so_far < BEYOND_MAX_COST else -1
 
 
-def Test(n: int, m: int, expected_cost: int):
+import sys
+
+from utils.context_manager import TimeoutException, time_limit
+from utils.pretty_test_runner import pretty_test_runner
+
+
+@pretty_test_runner(time_limit_in_sec=1, stop_on_tc_failure=False)
+def Test(n: int, m: int, expected_cost: int) -> tuple[bool, str]:
     actual_cost = Solution().minOperations(n, m)
-    assert (
-        actual_cost == expected_cost
-    ), f"got = {actual_cost}, want = {expected_cost}, n = {n}, m = {m}"
+    if actual_cost != expected_cost:
+        return False, f"got = {actual_cost}, want = {expected_cost}, n = {n}, m = {m}"
+    return True, ""
 
 
-Test(10, 12, 85)
-Test(4, 8, -1)
-Test(6, 2, -1)
-Test(7, 7, -1)
-Test(6, 6, 6)
-Test(58, 60, 616)
-Test(158, 160, 1764)
-Test(10, 12, 85)
-Test(5637, 2034, 34943)
-Test(4881, 7551, 59310)
+def main():
+    try:
+        print("Running tests ...")
+        with time_limit(5):
+            Test(10, 12, 85)
+            Test(4, 8, -1)
+            Test(6, 2, -1)
+            Test(7, 7, -1)
+            Test(6, 6, 6)
+            Test(58, 60, 616)
+            Test(158, 160, 1764)
+            Test(10, 12, 85)
+            Test(5637, 2034, 34943)
+            Test(4881, 7551, 59310)
+    except TimeoutException as te:
+        print(f"Tests got timed out: {te}")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

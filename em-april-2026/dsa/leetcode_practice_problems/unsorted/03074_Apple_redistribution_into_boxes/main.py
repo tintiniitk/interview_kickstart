@@ -1,8 +1,5 @@
-from typing import List
-
-
 class Solution:
-    def minimumBoxes(self, apple: List[int], capacity: List[int]) -> int:
+    def minimumBoxes(self, apple: list[int], capacity: list[int]) -> int:
         n = sum(apple)  # total number of apples
         m = len(capacity)
         total_capacity = sum(capacity)
@@ -16,12 +13,14 @@ class Solution:
         return m
 
 
+import sys
+
+from utils.context_manager import TimeoutException, time_limit
 from utils.pretty_test_runner import pretty_test_runner, truncate_param
-from utils.context_manager import time_limit, TimeoutException
 
 
 @pretty_test_runner(time_limit_in_sec=0.05, stop_on_tc_failure=False)
-def Test(apple: List[int], capacity: List[int], expected: int):
+def Test(apple: list[int], capacity: list[int], expected: int):
     actual = Solution().minimumBoxes(apple, capacity)
     if actual != expected:
         return False, f"got={truncate_param(actual)}, wanted={truncate_param(expected)}"
@@ -36,6 +35,7 @@ def main():
             Test(apple=[1, 1, 1], capacity=[2, 3], expected=1)
     except TimeoutException as te:
         print(f"Tests run timed out: {te}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

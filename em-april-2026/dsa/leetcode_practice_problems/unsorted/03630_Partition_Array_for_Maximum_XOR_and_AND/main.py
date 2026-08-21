@@ -1,8 +1,5 @@
-from typing import List
-
-
 class Solution:
-    def maximizeXorAndXor(self, nums: List[int]) -> int:
+    def maximizeXorAndXor(self, nums: list[int]) -> int:
         n = len(nums)
 
         res = 0
@@ -78,13 +75,13 @@ class Solution:
         return res
 
 
-def Test(nums: List[int], expected: int):
-    print(f"[RUN]")
+def Test(nums: list[int], expected: int):
+    print("[RUN]")
     actual = Solution().maximizeXorAndXor(nums)
-    assert (
-        actual == expected
-    ), f"  actual(={actual}) != expected(={expected}) for nums={nums}\n[FAILED]"
-    print(f"[DONE]")
+    assert actual == expected, (
+        f"  actual(={actual}) != expected(={expected}) for nums={nums}\n[FAILED]"
+    )
+    print("[DONE]")
 
 
 # Test([2, 3], 5)

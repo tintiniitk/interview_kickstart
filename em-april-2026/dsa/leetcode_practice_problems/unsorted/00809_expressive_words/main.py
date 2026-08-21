@@ -1,8 +1,5 @@
-from typing import List
-
-
 class Solution:
-    def expressiveWords(self, s: str, words: List[str]) -> int:
+    def expressiveWords(self, s: str, words: list[str]) -> int:
         def repr(input: str):
             if not input:
                 return []
@@ -31,12 +28,14 @@ class Solution:
         return len(list(filter(lambda q: is_stretchy(repr(q), s_repr), words)))
 
 
+import sys
+
+from utils.context_manager import TimeoutException, time_limit
 from utils.pretty_test_runner import pretty_test_runner, truncate_param
-from utils.context_manager import time_limit, TimeoutException
 
 
 @pretty_test_runner(time_limit_in_sec=0.05, stop_on_tc_failure=False)
-def Test(s: str, words: List[str], expected: int):
+def Test(s: str, words: list[str], expected: int):
     actual = Solution().expressiveWords(s, words)
     if actual != expected:
         return False, f"got={truncate_param(actual)}, wanted={truncate_param(expected)}"
@@ -48,9 +47,9 @@ def main():
         with time_limit(5):
             Test(s="heeellooo", words=["hello", "hi", "helo"], expected=1)
             Test(s="zzzzzyyyyy", words=["zzyy", "zy", "zyy"], expected=3)
-            pass
     except TimeoutException as te:
         print(f"Tests run timed out: {te}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

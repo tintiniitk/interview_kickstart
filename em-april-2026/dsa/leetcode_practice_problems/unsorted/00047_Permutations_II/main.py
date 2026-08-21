@@ -1,7 +1,7 @@
 # https://leetcode.com/problems/permutations-ii/
 
 from collections import deque
-import itertools
+from itertools import groupby
 
 
 class Solution:
@@ -11,10 +11,7 @@ class Solution:
             return []
         if n < 2:
             return [nums]
-        # nums.sort() # nums is now sorted - is it needed ?
-        q = deque()
-        q.append([nums[0]])
-        # print(f"Initially q = {q}")
+        q = deque([[nums[0]]])
         for i in range(1, n):
             num = nums[i]
             # print(f"At i = {i}, num = {num}, q={q}")
@@ -45,9 +42,7 @@ class Solution:
                 # print(f"   At end of len(q)>0 having dealt with arr={arr}, q={q}")
             # print(f"After i={i}, q = {q}")
             # Uniquify the list at this point
-            l = list(q)
-            l.sort()
-            q = deque(list(l for l, _ in itertools.groupby(l)))
+            q = deque(l for l, _ in groupby(sorted(q)))
             # print(f"After i={i}, after uniquifying q, q = {q}")
         # print(f"q = {q}")
         return list(q)

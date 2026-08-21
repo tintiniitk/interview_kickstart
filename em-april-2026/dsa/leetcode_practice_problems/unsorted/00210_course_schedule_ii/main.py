@@ -1,9 +1,8 @@
-from typing import List, Tuple
 from collections import deque
 
 
 class Solution:
-    def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
+    def findOrder(self, numCourses: int, prerequisites: list[list[int]]) -> list[int]:
         n = numCourses
         if n < 2:
             return [0]
@@ -25,7 +24,7 @@ class Solution:
             course for course in range(n) if not dependencies[course]
         ]
         if not independent_courses:
-            print(f"Found no independent courses")
+            print("Found no independent courses")
             return []
 
         # print(f"independent_courses={independent_courses}")
@@ -75,15 +74,18 @@ class Solution:
         return populate_courses_to_take_in_order(ranks)
 
 
-from utils.pretty_test_runner import pretty_test_runner, truncate_param
-from utils.context_manager import time_limit, TimeoutException
+import sys
+
 from tc_x import tc as tc_x_tc
+
+from utils.context_manager import TimeoutException, time_limit
+from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
 def Test(
-    numCourses: int, prerequisites: List[List[int]], expected: List[int]
-) -> Tuple[bool, str]:
+    numCourses: int, prerequisites: list[list[int]], expected: list[int]
+) -> tuple[bool, str]:
     actual = Solution().findOrder(numCourses, prerequisites)
     if actual != expected:
         return False, f"got={actual}, wanted={expected}"
@@ -92,15 +94,13 @@ def Test(
 
 def main():
     try:
-        print(f"Running tests ...")
+        print("Running tests ...")
         with time_limit(5):
             Test(numCourses=3, prerequisites=[[1, 0], [1, 2], [0, 1]], expected=[])
             Test(**tc_x_tc)
     except TimeoutException as te:
         print(f"Tests got timed out: {te}")
-    except Exception as e:
-        print(f"Tests failed: {e}")
-        raise e
+        sys.exit(1)
 
 
 if __name__ == "__main__":

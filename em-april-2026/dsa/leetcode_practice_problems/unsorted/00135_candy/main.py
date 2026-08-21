@@ -1,10 +1,8 @@
-from typing import List
 from itertools import pairwise
-from collections import defaultdict, deque
 
 
 class Solution:
-    def candy(self, ratings: List[int]) -> int:
+    def candy(self, ratings: list[int]) -> int:
         n = len(ratings)
 
         # adj = defaultdict(set)
@@ -46,12 +44,14 @@ class Solution:
         return sum(candies)
 
 
-from utils.pretty_test_runner import pretty_test_runner, truncate_param
-from utils.context_manager import time_limit, TimeoutException
+import sys
+
+from utils.context_manager import TimeoutException, time_limit
+from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
-def Test(ratings: List[int], expected: int) -> tuple[bool, str]:
+def Test(ratings: list[int], expected: int) -> tuple[bool, str]:
     actual = Solution().candy(ratings)
     if actual != expected:
         return False, f"got={actual}, wanted={expected}"
@@ -60,15 +60,13 @@ def Test(ratings: List[int], expected: int) -> tuple[bool, str]:
 
 def main():
     try:
-        print(f"Running tests ...")
+        print("Running tests ...")
         with time_limit(5):
             Test(ratings=[1, 0, 2], expected=5)
             Test(ratings=[1, 2, 2], expected=4)
     except TimeoutException as te:
         print(f"Tests got timed out: {te}")
-    except Exception as e:
-        print(f"Tests failed: {e}")
-        raise e
+        sys.exit(1)
 
 
 if __name__ == "__main__":

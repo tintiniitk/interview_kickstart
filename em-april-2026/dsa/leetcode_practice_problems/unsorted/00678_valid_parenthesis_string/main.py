@@ -1,12 +1,9 @@
-from functools import cache
-
-
 class Solution:
     def checkValidString(self, s: str) -> bool:
         n = len(s)
-        n_by_2 = (n + 1) // 2
 
         # # Without cache, idea works but runs out of time (TLE) because number of branches is 3^n in worst case.
+        # n_by_2 = (n + 1) // 2
         # # TC = SC = O(n^2)
         # @cache
         # def dp_helper(index: int, depth: int) -> bool:
@@ -54,8 +51,10 @@ class Solution:
         return True
 
 
-from utils.pretty_test_runner import pretty_test_runner, truncate_param
-from utils.context_manager import time_limit, TimeoutException
+import sys
+
+from utils.context_manager import TimeoutException, time_limit
+from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
@@ -68,7 +67,7 @@ def Test(s: str, expected: bool) -> (bool, str):
 
 def main():
     try:
-        print(f"Running tests ...")
+        print("Running tests ...")
         with time_limit(5):
             Test(s="()", expected=True)
             Test(s="(*)", expected=True)
@@ -88,8 +87,7 @@ def main():
             Test(s="((" + "".join(["*"] * 4), expected=True)
     except TimeoutException as te:
         print(f"Tests got timed out: {te}")
-    except Exception as e:
-        print(f"Tests failed: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

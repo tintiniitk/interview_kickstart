@@ -1,8 +1,5 @@
-from typing import List
-
-
 class Solution:
-    def trap(self, height: List[int]) -> int:
+    def trap(self, height: list[int]) -> int:
         n = len(height)
         # # original solution I came up with which costs TC=O(n), SC=O(n)
         # maxes_after = [0]
@@ -31,16 +28,28 @@ class Solution:
         return water
 
 
-def Test(height: List[int], expected: int):
-    print(f"[RUN] Test case [height={height}, expected={expected}]")
+import sys
+
+from utils.context_manager import TimeoutException, time_limit
+from utils.pretty_test_runner import pretty_test_runner
+
+
+@pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
+def Test(height: list[int], expected: int) -> tuple[bool, str]:
     actual = Solution().trap(height)
-    assert actual == expected, f"[FAILED]\nactual(={actual})"
-    print(f"[DONE]")
+    if actual != expected:
+        return False, f"got={actual}, wanted={expected}"
+    return True, ""
 
 
-Test([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1], 6)
-Test([4, 2, 0, 3, 2, 5], 9)
-Test([1, 1, 1], 0)
-Test([1, 0, 1], 1)
-Test([1, 2, 1], 0)
-Test([1, 2, 1, 2], 1)
+try:
+    with time_limit(5):
+        Test([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1], 6)
+        Test([4, 2, 0, 3, 2, 5], 9)
+        Test([1, 1, 1], 0)
+        Test([1, 0, 1], 1)
+        Test([1, 2, 1], 0)
+        Test([1, 2, 1, 2], 1)
+except TimeoutException as te:
+    print(te)
+    sys.exit(1)

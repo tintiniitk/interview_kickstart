@@ -1,6 +1,5 @@
 # from typing import List
 # from collections import Counter
-from functools import cache
 import itertools
 
 
@@ -116,8 +115,10 @@ class Solution:
         return best_superstring
 
 
-from utils.pretty_test_runner import pretty_test_runner, truncate_param
-from utils.context_manager import time_limit, TimeoutException
+import sys
+
+from utils.context_manager import TimeoutException, time_limit
+from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
@@ -130,7 +131,7 @@ def Test(a: str, b: str, c: str, expected: str) -> (bool, str):
 
 def main():
     try:
-        print(f"Running tests ...")
+        print("Running tests ...")
         with time_limit(5):
             Test(a="abc", b="bca", c="aaa", expected="aaabca")
             Test(a="ab", b="ba", c="aba", expected="aba")
@@ -143,9 +144,7 @@ def main():
             )
     except TimeoutException as te:
         print(f"Tests got timed out: {te}")
-    except Exception as e:
-        print(f"Tests failed: {e}")
-        raise e
+        sys.exit(1)
 
 
 if __name__ == "__main__":

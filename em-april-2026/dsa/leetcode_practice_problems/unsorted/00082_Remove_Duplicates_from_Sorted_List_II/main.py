@@ -1,9 +1,8 @@
-from typing import Optional, List, Tuple
 from utils.collections.LinkedList import ListNode
 
 
 class Solution:
-    def deleteDuplicates(self, head: Optional[ListNode]) -> Optional[ListNode]:
+    def deleteDuplicates(self, head: ListNode | None) -> ListNode | None:
         new_head, new_tail = None, None
         if not head:
             return None
@@ -35,12 +34,14 @@ class Solution:
         return new_head
 
 
-from utils.pretty_test_runner import pretty_test_runner, truncate_param
-from utils.context_manager import time_limit, TimeoutException
+import sys
+
+from utils.context_manager import TimeoutException, time_limit
+from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
-def Test(head: Optional[ListNode], expected: Optional[ListNode]) -> Tuple[bool, str]:
+def Test(head: ListNode | None, expected: ListNode | None) -> tuple[bool, str]:
     actual = Solution().deleteDuplicates(head)
     if not (
         (not actual and not expected) or (actual and expected and actual.eq(expected))
@@ -52,7 +53,7 @@ def Test(head: Optional[ListNode], expected: Optional[ListNode]) -> Tuple[bool, 
 def main():
     LL = ListNode
     try:
-        print(f"Running tests ...")
+        print("Running tests ...")
         with time_limit(5):
             Test(
                 head=LL(
@@ -71,9 +72,7 @@ def main():
             Test(head=LL(1, LL(1, LL(2))), expected=LL(2))
     except TimeoutException as te:
         print(f"Tests got timed out: {te}")
-    except Exception as e:
-        print(f"Tests failed: {e}")
-        raise e
+        sys.exit(1)
 
 
 if __name__ == "__main__":
