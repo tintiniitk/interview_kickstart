@@ -32,11 +32,12 @@ def truncate_param(arg, max_str=100, max_seq=10):
 
 
 P = ParamSpec("P")
+# R = TypeVar("R")
 
 
 def pretty_test_runner(
     time_limit_in_sec: float | None = None, stop_on_tc_failure: bool | None = False
-):
+) -> Callable[[Callable[P, tuple[bool, str]]], Callable[P, tuple[bool, str]]]:
     """
     Decorator for test functions that formats output, handles timeouts, and optionally
     halts execution on failure.
