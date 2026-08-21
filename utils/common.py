@@ -10,7 +10,4 @@ def is_debugging() -> bool:
         return True
 
     # 2. Check if debugpy or pydevd engine is loaded in active modules
-    if "debugpy" in sys.modules or "pydevd" in sys.modules:
-        return True
-
-    return False
+    return "debugpy" in sys.modules or "pydevd" in sys.modules

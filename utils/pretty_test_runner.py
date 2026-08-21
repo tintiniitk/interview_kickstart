@@ -3,7 +3,7 @@ import time
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from functools import wraps
-from typing import ParamSpec
+from typing import Any, ParamSpec, overload
 
 from utils.common import is_debugging
 from utils.time import format_minimal_seconds
@@ -32,19 +32,45 @@ def truncate_param(arg, max_str=100, max_seq=10):
 
 
 P = ParamSpec("P")
-# R = TypeVar("R")
+
+
+# Overload 1: Called with arguments or parens -> returns a Decorator
+@overload
+def pretty_test_runner(
+    time_limit_in_sec: float | None = ...,
+    stop_on_tc_failure: bool | None = ...,
+) -> Callable[[Callable[P, tuple[bool, str]]], Callable[P, tuple[bool, str]]]: ...
+
+
+# Overload 2: Used directly as a bare decorator `@pretty_test_runner`
+@overload
+def pretty_test_runner(
+    time_limit_in_sec: Callable[P, tuple[bool, str]],
+    stop_on_tc_failure: bool | None = ...,
+) -> Callable[P, tuple[bool, str]]: ...
 
 
 def pretty_test_runner(
-    time_limit_in_sec: float | None = None, stop_on_tc_failure: bool | None = False
-) -> Callable[[Callable[P, tuple[bool, str]]], Callable[P, tuple[bool, str]]]:
+    time_limit_in_sec: Any = None, stop_on_tc_failure: bool | None = False
+) -> Any:
     """
     Decorator for test functions that formats output, handles timeouts, and optionally
     halts execution on failure.
     """
+    target_func: Any = None
+    actual_time_limit_in_sec: float | None = None
+
+    if callable(time_limit_in_sec) and not isinstance(time_limit_in_sec, (int, float)):
+        target_func = time_limit_in_sec
+        actual_time_limit_in_sec = None
+    elif isinstance(time_limit_in_sec, (int, float)):
+        actual_time_limit_in_sec = float(time_limit_in_sec)
+    else:
+        actual_time_limit_in_sec = None
+
     # If debugging, ignore the timeout completely.
     if is_debugging():
-        time_limit_in_sec = None
+        actual_time_limit_in_sec = None
 
     def decorator(func: Callable[P, tuple[bool, str]]) -> Callable[P, tuple[bool, str]]:
         @wraps(func)
@@ -62,12 +88,12 @@ def pretty_test_runner(
 
             start_time = time.perf_counter()
 
-            if time_limit_in_sec is not None and time_limit_in_sec > 0:
+            if actual_time_limit_in_sec is not None and actual_time_limit_in_sec > 0:
                 # Execute test function with a timeout using ThreadPoolExecutor
                 with ThreadPoolExecutor(max_workers=1) as executor:
                     future = executor.submit(func, *args, **kwargs)
                     try:
-                        result = future.result(timeout=time_limit_in_sec)
+                        result = future.result(timeout=actual_time_limit_in_sec)
                         # Expecting function return: (bool_status, str_error_msg)
                         if isinstance(result, tuple) and len(result) == 2:
                             passed, error_msg = result
@@ -76,7 +102,9 @@ def pretty_test_runner(
                             error_msg = "Test returned unexpected format (expected tuple: (bool, str))."
                     except TimeoutError:
                         passed = False
-                        error_msg = f"Test timed out after {time_limit_in_sec} seconds."
+                        error_msg = (
+                            f"Test timed out after {actual_time_limit_in_sec} seconds."
+                        )
             else:
                 result = func(*args, **kwargs)
                 if isinstance(result, tuple) and len(result) == 2:
@@ -107,9 +135,7 @@ def pretty_test_runner(
         return wrapper
 
     # Allow decorator to be used either with or without parentheses: @PrettyTestRun or @PrettyTestRun(...)
-    if callable(time_limit_in_sec):
-        func = time_limit_in_sec
-        time_limit_in_sec = None
-        return decorator(func)
+    if target_func is not None:
+        return decorator(target_func)
 
     return decorator

@@ -1,4 +1,5 @@
-from typing import Optional, Self
+from typing import Optional
+
 
 # Definition for singly-linked list.
 class ListNode:
@@ -31,11 +32,7 @@ class ListNode:
                 return False
             cur1 = cur1.next
             cur2 = cur2.next
-        if cur1 and not cur2:
-            return False
-        if cur2 and not cur1:
-            return False
-        return True
+        return (cur1 and cur2) or (not cur1 and not cur2)
 
 
 def main():
