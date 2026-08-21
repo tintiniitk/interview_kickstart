@@ -9,6 +9,7 @@ __pycache__
 *.obj
 *.class
 *.log
+.dir_diff_stats.txt
 
 #temporarily ignored because of incomplete code.
 em-april-2026/dsa/leetcode_practice_problems/00034_find_first_and_last_position_of_element_in_sorted_array/main.py
