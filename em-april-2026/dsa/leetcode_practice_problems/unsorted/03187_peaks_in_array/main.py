@@ -262,7 +262,9 @@ from utils.pretty_test_runner import eq_list_int, pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.25, stop_on_tc_failure=True)
-def Test(nums: list[int], queries: list[list[int]], expected: int) -> tuple[bool, str]:
+def Test(
+    nums: list[int], queries: list[list[int]], expected: list[int]
+) -> tuple[bool, str]:
     actual = Solution().countOfPeaks(nums, queries)
     # with open("output.py", "w") as f:
     #     f.write(f"output = {actual}")
