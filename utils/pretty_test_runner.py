@@ -3,6 +3,7 @@ import time
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from functools import wraps
+from itertools import takewhile
 from typing import Any, ParamSpec, overload
 
 from utils.common import should_bypass_timeout
@@ -139,3 +140,43 @@ def pretty_test_runner(
         return decorator(target_func)
 
     return decorator
+
+
+def eq_list_int(
+    actual: list[int] | None, expected: list[int] | None
+) -> tuple[bool, str]:
+    if not actual and not expected:
+        return True, ""
+    if actual and not expected:
+        return False, "actual and not expected"
+    if not actual and expected:
+        return False, "not actual and expected"
+    n = len(expected)
+    if n != len(actual):
+        return False, f"len(actual) = {len(actual)}, len(expected) = {n}"
+    num_matches = sum(
+        1
+        for _ in takewhile(
+            lambda pair: pair[0] == pair[1],
+            zip(actual, expected),
+        )
+    )
+    if num_matches < n:
+        return (
+            False,
+            f"actual={truncate_param(actual)}\nactual[{num_matches}] != expected[{num_matches}]",
+        )
+    return True, ""
+
+
+def main():
+    assert eq_list_int(actual=[1, 2, 3], expected=[1, 2, 3])[0]
+    assert not eq_list_int(actual=[1, 2], expected=[1, 2, 3])[0]
+    assert eq_list_int(None, None)[0]
+    assert not eq_list_int(None, [1])[0]
+    assert not eq_list_int([1], None)[0]
+    assert not eq_list_int(actual=[1, 4, 3], expected=[1, 2, 3])[0]
+
+
+if __name__ == "__main__":
+    main()
