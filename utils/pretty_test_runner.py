@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from functools import wraps
 from typing import Any, ParamSpec, overload
 
-from utils.common import is_debugging
+from utils.common import should_bypass_timeout
 from utils.time import format_minimal_seconds
 
 
@@ -69,7 +69,7 @@ def pretty_test_runner(
         actual_time_limit_in_sec = None
 
     # If debugging, ignore the timeout completely.
-    if is_debugging():
+    if should_bypass_timeout():
         actual_time_limit_in_sec = None
 
     def decorator(func: Callable[P, tuple[bool, str]]) -> Callable[P, tuple[bool, str]]:
