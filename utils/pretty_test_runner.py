@@ -151,22 +151,24 @@ def eq_list_int(
         return False, "actual and not expected"
     if not actual and expected:
         return False, "not actual and expected"
-    n = len(expected)
-    if n != len(actual):
-        return False, f"len(actual) = {len(actual)}, len(expected) = {n}"
-    num_matches = sum(
-        1
-        for _ in takewhile(
-            lambda pair: pair[0] == pair[1],
-            zip(actual, expected),
+    if expected is not None and actual is not None:
+        n = len(expected)
+        if n != len(actual):
+            return False, f"len(actual) = {len(actual)}, len(expected) = {n}"
+        num_matches = sum(
+            1
+            for _ in takewhile(
+                lambda pair: pair[0] == pair[1],
+                zip(actual, expected),
+            )
         )
-    )
-    if num_matches < n:
-        return (
-            False,
-            f"actual={truncate_param(actual)}\nactual[{num_matches}] != expected[{num_matches}]",
-        )
-    return True, ""
+        if num_matches < n:
+            return (
+                False,
+                f"actual={truncate_param(actual)}\nactual[{num_matches}] != expected[{num_matches}]",
+            )
+        return True, ""
+    return False, "either actual or expected is None"
 
 
 def main():
