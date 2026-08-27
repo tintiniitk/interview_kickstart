@@ -1,6 +1,8 @@
 import logging
+from typing import Any
 
 from utils.logger import create_logger
+from utils.time import format_minimal_seconds
 
 logger = create_logger(logging.INFO)
 
@@ -96,7 +98,9 @@ def Sanity_Test() -> tuple[bool, str]:
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
-def Test(operations: list[list[int]], expected: list[int | None]) -> tuple[bool, str]:
+def Test_LRUCache(
+    operations: list[list[int]], expected: list[int | None]
+) -> tuple[bool, str]:
     ret = []
     if operations:
         cache = LRUCache(operations[0][0])
@@ -114,12 +118,16 @@ def Test(operations: list[list[int]], expected: list[int | None]) -> tuple[bool,
     return True, ""
 
 
+from time import perf_counter
+
+
 def main():
     try:
-        logger.info("Running tests ...")
+        start = perf_counter()
+        logger.info("Running tests for LRUCache ...")
         with time_limit(5):
             Sanity_Test()
-            Test(
+            Test_LRUCache(
                 operations=[
                     [2],
                     [1, 1],
@@ -134,7 +142,7 @@ def main():
                 ],
                 expected=[None, None, None, 1, None, -1, None, -1, 3, 4],
             )
-            Test(
+            Test_LRUCache(
                 operations=[
                     [2],
                     [1, 0],
@@ -150,8 +158,16 @@ def main():
                 expected=[None, None, None, 0, None, -1, None, -1, 3, 4],
             )
     except TimeoutException as te:
-        logger.error(f"Tests got timed out: {te}")
+        end = perf_counter()
+        logger.error(
+            f"LRUCache Tests got timed out after {format_minimal_seconds(end - start)}: {te}"
+        )
         sys.exit(1)
+    finally:
+        end = perf_counter()
+        logger.info(
+            f"LRUCache Tests got finished after {format_minimal_seconds(end - start)}"
+        )
 
 
 if __name__ == "__main__":
