@@ -35,18 +35,53 @@ class DoublyLinkedListNode:
 DLLNode = DoublyLinkedListNode
 
 
-class DoubleLinkedList:
-    # dummy head and tail nodes
+class DoublyLinkedList:
+    """DoublyLinkedList is a generic class for holding
+    a doubly-linked-list data structure.
+    It provides methods to append/pop/peek elements,
+    both at the head (left) and tail (right).
+    It doesn't concern itself with the type of the data being held.
+    It only deals with DLLNode objects created beforehand and supplied
+    to the append* methods.
+    """
+
+    # Dummy head and tail nodes. These are just markers to avoid null-checks, and carry no other useful data.
+    # The will always exist for the lifetime of the DoublyLinkedList object.
     head: DLLNode
     tail: DLLNode
+    m_size: int
 
     def __init__(self):
         self.head = DLLNode(-1)
         self.tail = DLLNode(-1)
         self.head.next = self.tail
         self.tail.prev = self.head
+        self.m_size = 0
 
-    def append(self, next: DLLNode | None) -> "DoubleLinkedList":
+    def size(self) -> int:
+        return self.m_size
+
+    def check_invariants(self):
+        assert (
+            self.head is not None
+            and self.tail is not None
+            and self.head != self.tail
+            and self.m_size >= 0
+        )
+        size_forward = 0
+        cur = self.head.next
+        while cur and cur != self.tail:
+            size_forward += 1
+            cur = cur.next
+        assert self.m_size == size_forward
+        size_backward = 0
+        cur = self.tail.prev
+        while cur and cur != self.head:
+            size_backward += 1
+            cur = cur.prev
+        assert self.m_size == size_backward
+
+    def append(self, next: DLLNode | None) -> "DoublyLinkedList":
         if not next:
             return self
         next.next, next.prev = None, None
@@ -55,9 +90,11 @@ class DoubleLinkedList:
             next.prev = self.tail.prev
         self.tail.prev = next
         next.next = self.tail
+        self.m_size += 1
+        self.check_invariants()
         return self
 
-    def append_left(self, prev: DLLNode) -> "DoubleLinkedList":
+    def append_left(self, prev: DLLNode) -> "DoublyLinkedList":
         if not prev:
             return self
         prev.next, prev.prev = None, None
@@ -66,6 +103,8 @@ class DoubleLinkedList:
             prev.next = self.head.next
         self.head.next = prev
         prev.prev = self.head
+        self.m_size += 1
+        self.check_invariants()
         return self
 
     def remove(self, node: DLLNode | None) -> DLLNode | None:
@@ -82,6 +121,8 @@ class DoubleLinkedList:
         if node.next:
             node.next.prev = node.prev
         node.next, node.prev = None, None
+        self.m_size -= 1
+        self.check_invariants()
         return node
 
     def pop(self) -> DLLNode | None:
@@ -105,7 +146,7 @@ class DoubleLinkedList:
         return self.__str__()
 
 
-DLL = DoubleLinkedList
+DLL = DoublyLinkedList
 
 
 def main():
