@@ -51,7 +51,7 @@ class LRUCache:
                     del self.m[evicted_node.val[0]]
                 else:
                     raise ValueError(
-                        f"Failed to pop LRU evicted_node {self.q.head} from cache queue"
+                        f"Failed to pop LRU evicted_node {self.q._head} from cache queue"
                     )
             node = DLLNode((key, value))
             self.q.append(node)
@@ -122,8 +122,8 @@ from time import perf_counter
 
 
 def main():
+    start = perf_counter()
     try:
-        start = perf_counter()
         logger.info("Running tests for LRUCache ...")
         with time_limit(5):
             Sanity_Test()
