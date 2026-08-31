@@ -1,12 +1,14 @@
-from typing import Optional
-
-
 # Definition for singly-linked list.
-class ListNode:
-    val: int = 0
-    next: Optional["ListNode"] = None
+from typing import Any
 
-    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+ValueType = Any
+
+
+class ListNode:
+    val: Any
+    next: "ListNode | None" = None
+
+    def __init__(self, val: ValueType, next: "ListNode | None" = None):
         self.val = val
         self.next = next
 
@@ -35,15 +37,20 @@ class ListNode:
         return (cur1 and cur2) or (not cur1 and not cur2)
 
 
+LL = ListNode
+
+
 def main():
-    LL = ListNode
-    assert LL(1)
-    assert LL(1) != LL(1)
-    assert LL(1) is not LL(1)
-    assert not LL(1).eq(None)
-    assert LL(1).eq(LL(1))
-    assert LL(1, LL(2)).eq(LL(1, LL(2)))
-    assert not LL(1, LL(2)).eq(LL(1))
+    ll1 = LL(1)
+    assert ll1
+    assert ll1 != LL(1)
+    assert ll1 is not LL(1)
+    assert not ll1.eq(None)
+    assert ll1.eq(LL(1))
+    ll12 = LL(1, LL(2))
+    assert ll12 is not LL(1, LL(2))
+    assert ll12.eq(LL(1, LL(2)))
+    assert not ll12.eq(ll1)
 
 
 if __name__ == "__main__":
