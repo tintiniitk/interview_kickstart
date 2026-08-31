@@ -1,5 +1,4 @@
 import logging
-from typing import Any
 
 from utils.logger import create_logger
 from utils.time import format_minimal_seconds
