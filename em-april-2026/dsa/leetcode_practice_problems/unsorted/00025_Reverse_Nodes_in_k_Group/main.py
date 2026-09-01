@@ -1,5 +1,3 @@
-from ast import List
-
 from utils.collections.LinkedList import ListNode
 
 
