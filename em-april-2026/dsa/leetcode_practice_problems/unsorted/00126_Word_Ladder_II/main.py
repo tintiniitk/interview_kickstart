@@ -1,6 +1,8 @@
 from collections import defaultdict
 from heapq import heappop, heappush
 
+ALPHABET = set("abcdefghijklmnopqrstuvwxyz")
+
 
 class Solution:
     def findLadders(
@@ -17,18 +19,19 @@ class Solution:
         # assume endWord and all words in words are also of length k
         def create_adj_lists(wordList: list[str], beginWord: str):
             adj_lists = defaultdict(set)
-            words = set(wordList)
-            for i, word in enumerate(wordList):
-                for j in range(i + 1, n):
-                    word2 = wordList[j]
-                    if dist(word, word2) == 1:  # word != word2 and
-                        adj_lists[word].add(word2)
-                        adj_lists[word2].add(word)
-            if beginWord not in words:
-                for word2 in wordList:
-                    if dist(beginWord, word2) == 1:  # beginWord != word2 and
-                        adj_lists[beginWord].add(word2)
-                        adj_lists[word2].add(beginWord)
+            words = set(wordList + [beginWord])
+            for word in words:
+                var_char_list = list(word)
+                for j, c in enumerate(word):
+                    c = word[j]
+                    for s in ALPHABET:
+                        if s != c:
+                            var_char_list[j] = s
+                            var_str = "".join(var_char_list)
+                            if var_str in words:
+                                adj_lists[var_str].add(word)
+                                adj_lists[word].add(var_str)
+                    var_char_list[j] = c
             # print(f"adj_lists={adj_lists}")
             return adj_lists
 
@@ -97,7 +100,7 @@ class Solution:
 import sys
 
 from utils.context_manager import TimeoutException, time_limit
-from utils.pretty_test_runner import eq_list_int, pretty_test_runner
+from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.1, stop_on_tc_failure=False)
