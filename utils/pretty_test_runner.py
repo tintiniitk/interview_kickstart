@@ -143,8 +143,14 @@ def pretty_test_runner(
 
 
 def eq_list_int(
-    actual: list[int] | None, expected: list[int] | None
+    actual: list[Any | None] | None, expected: list[Any | None] | None
 ) -> tuple[bool, str]:
+    if actual is None and expected is None:
+        return True, ""
+    if actual is None and expected is not None:
+        return False, "actual is None and expected is not None"
+    if actual is not None and expected is None:
+        return False, "actual is not None and expected is None"
     if not actual and not expected:
         return True, ""
     if actual and not expected:
@@ -154,7 +160,10 @@ def eq_list_int(
     if expected is not None and actual is not None:
         n = len(expected)
         if n != len(actual):
-            return False, f"len(actual) = {len(actual)}, len(expected) = {n}"
+            return (
+                False,
+                f"len(actual) = {len(actual)}, len(expected) = {n}, actual={truncate_param(actual)}, expected={truncate_param(expected)}",
+            )
         num_matches = sum(
             1
             for _ in takewhile(
@@ -165,7 +174,7 @@ def eq_list_int(
         if num_matches < n:
             return (
                 False,
-                f"actual={truncate_param(actual)}\nactual[{num_matches}] != expected[{num_matches}]",
+                f"actual={truncate_param(actual)},\nexpected={truncate_param(expected)},\nactual[{num_matches}] != expected[{num_matches}]",
             )
         return True, ""
     return False, "either actual or expected is None"
