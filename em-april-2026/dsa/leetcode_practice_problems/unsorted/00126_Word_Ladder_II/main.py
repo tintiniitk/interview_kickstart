@@ -8,32 +8,36 @@ class Solution:
     ) -> list[list[str]]:
         if beginWord == endWord:
             return [[beginWord, endWord]]
-        words = set(wordList)
+        n = len(wordList)
 
         # helper
         def dist(word1: str, word2: str) -> int:
             return sum(c1 != c2 for c1, c2 in zip(word1, word2))
 
         # assume endWord and all words in words are also of length k
-        adj_lists = defaultdict(set)
-        for i, word in enumerate(wordList):
-            for j in range(i + 1, len(words)):
-                word2 = wordList[j]
-                if dist(word, word2) == 1:  # word != word2 and
-                    adj_lists[word].add(word2)
-                    adj_lists[word2].add(word)
-        if beginWord not in words:
-            for word2 in wordList:
-                if dist(beginWord, word2) == 1:  # beginWord != word2 and
-                    adj_lists[beginWord].add(word2)
-                    adj_lists[word2].add(beginWord)
-        # print(f"adj_lists={adj_lists}")
+        def create_adj_lists(wordList: list[str], beginWord: str):
+            adj_lists = defaultdict(set)
+            words = set(wordList)
+            for i, word in enumerate(wordList):
+                for j in range(i + 1, n):
+                    word2 = wordList[j]
+                    if dist(word, word2) == 1:  # word != word2 and
+                        adj_lists[word].add(word2)
+                        adj_lists[word2].add(word)
+            if beginWord not in words:
+                for word2 in wordList:
+                    if dist(beginWord, word2) == 1:  # beginWord != word2 and
+                        adj_lists[beginWord].add(word2)
+                        adj_lists[word2].add(beginWord)
+            # print(f"adj_lists={adj_lists}")
+            return adj_lists
 
+        adj_lists = create_adj_lists(wordList, beginWord)
         # find min_dist to endWord from each word, including from beginWord
-        distances: dict[str, int] = {word: len(words) + 1 for word in words}
+        distances: dict[str, int] = {word: n + 1 for word in wordList}
         distances[endWord] = 0
         pq = [(0, endWord)]
-        min_distance_bw_begin_end = len(words) + 1
+        min_distance_bw_begin_end = n + 1
         min_distance_prev_node = defaultdict(None)
         min_distance_prev_node[endWord] = None
         while pq:
