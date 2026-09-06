@@ -1,0 +1,51 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+        },
+        {
+            "name": "Debug selected cpp file",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "preLaunchTask": "C/C++: g++ build active file",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "internalConsoleOptions": "openOnSessionStart",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Skip standard library functions when stepping",
+                    "text": "skip -rfu ^std::",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Disable debuginfod remote symbol downloading",
+                    "text": "set debuginfod enabled off",
+                    "ignoreFailures": true
+                }
+            ],
+        }
+    ]
+}
