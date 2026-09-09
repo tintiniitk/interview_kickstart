@@ -60,6 +60,16 @@ class DoublyLinkedList:
         self._size = 0
         self._test_invariants = test_invariants
 
+    def head(self) -> DLLNode | None:
+        if self._head.next == self._tail:
+            return None
+        return self._head.next
+
+    def tail(self) -> DLLNode | None:
+        if self._tail.prev == self._head:
+            return None
+        return self._tail.prev
+
     def size(self) -> int:
         """Returns the current size of the list.
         In other words, sum-total of all the successful append*,insert* calls
