@@ -1,5 +1,4 @@
 from collections.abc import Callable
-from dataclasses import dataclass
 from heapq import heappop, heappush
 from time import sleep
 
@@ -31,38 +30,6 @@ def move_id_to_move_name(id: int) -> str:
     return s
 
 
-@dataclass(slots=True, order=True)
-class Entry:
-    row: int
-    col: int
-    turns: int  # num-turns upto this entry.
-    last_move_id: int  # 0 for row-, 1 for row+, 2 for col-, 3 for col+, 4 for none
-
-    def __init__(
-        self,
-        row: int,
-        col: int,
-        turns: int,
-        last_move_id: int,
-    ):
-        self.row = row
-        self.col = col
-        self.turns = turns
-        self.last_move_id = last_move_id
-
-    def __str__(self) -> str:
-        return f"{{[{self.row:2},{self.col:2}], #turns={self.turns}, {move_id_to_move_name(self.last_move_id)}}}"
-
-    def __repr__(self) -> str:
-        return self.__str__()
-
-    def __iter__(self):
-        yield self.row
-        yield self.col
-        yield self.turns
-        yield self.last_move_id
-
-
 class Solution:
     def minCost(self, grid: list[list[int]], k: int) -> int:
         assert grid is not None
@@ -78,35 +45,31 @@ class Solution:
             return -1
         log(lambda: f"m={m}, n={n}, k={k}")
         INF = 10**9
-        next_moves = {
-            "prev_row": {
+        next_moves = [
+            {
                 "delta": [-1, 0],
                 "id": 0,
-                "condition": lambda row, col: row > 0,
             },
-            "next_row": {
+            {
                 "delta": [1, 0],
                 "id": 1,
-                "condition": lambda row, col: row < m - 1,
             },
-            "prev_col": {
+            {
                 "delta": [0, -1],
                 "id": 2,
-                "condition": lambda row, col: col > 0,
             },
-            "next_col": {
+            {
                 "delta": [0, 1],
                 "id": 3,
-                "condition": lambda row, col: col < n - 1,
             },
-        }
+        ]
         min_cost = [
             [[[INF for _ in range(4)] for _ in range(k + 1)] for _ in range(n)]
             for _ in range(m)
         ]
         # The cost of reaching 0,0 in any number of turns from any direction is always grid[0][0].
         min_cost[0][0][:] = [[grid[0][0] for _ in range(4)]] * (k + 1)
-        pq = [(grid[0][0], Entry(0, 0, 0, 4))]
+        pq = [(grid[0][0], (0, 0, 0, 4))]
         overall_min_cost = INF
         while pq:
             cost, q_entry = heappop(pq)
@@ -140,13 +103,13 @@ class Solution:
                     )
                 continue
 
-            for move in next_moves.values():
+            for move in next_moves:
                 move_id = move["id"]
-                if move["condition"](row, col):
-                    next_cell_row, next_cell_col = (
-                        row + move["delta"][0],
-                        col + move["delta"][1],
-                    )
+                next_cell_row, next_cell_col = (
+                    row + move["delta"][0],
+                    col + move["delta"][1],
+                )
+                if 0 <= next_cell_row < m and 0 <= next_cell_col < n:
                     next_cell_cost = grid[next_cell_row][next_cell_col]
                     next_cell_new_min_cost = cost + next_cell_cost
                     if (
@@ -166,7 +129,7 @@ class Solution:
                                         next_cell_new_min_cost,
                                     )
                                 )
-                            appended_entry = Entry(
+                            appended_entry = (
                                 next_cell_row,
                                 next_cell_col,
                                 turns,
@@ -189,7 +152,7 @@ class Solution:
                                 min_cost[next_cell_row][next_cell_col][ki][move_id],
                                 next_cell_new_min_cost,
                             )
-                        appended_entry = Entry(
+                        appended_entry = (
                             next_cell_row,
                             next_cell_col,
                             turns + 1,
