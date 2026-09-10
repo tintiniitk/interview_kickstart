@@ -1,9 +1,7 @@
-from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass
+from heapq import heappop, heappush
 from time import sleep
-
-from utils.pretty_test_runner import truncate_param
 
 DEBUGGING = False
 
@@ -33,23 +31,27 @@ def move_id_to_move_name(id: int) -> str:
     return s
 
 
-@dataclass(slots=True)
+@dataclass(slots=True, order=True)
 class Entry:
     row: int
     col: int
-    cost: int
     turns: int  # num-turns upto this entry.
     last_move_id: int  # 0 for row-, 1 for row+, 2 for col-, 3 for col+, 4 for none
 
-    def __init__(self, row: int, col: int, cost: int, turns: int, last_move_id: int):
+    def __init__(
+        self,
+        row: int,
+        col: int,
+        turns: int,
+        last_move_id: int,
+    ):
         self.row = row
         self.col = col
-        self.cost = cost
         self.turns = turns
         self.last_move_id = last_move_id
 
     def __str__(self) -> str:
-        return f"{{[{self.row:2},{self.col:2}], cost={self.cost}, #turns={self.turns}, {move_id_to_move_name(self.last_move_id)}}}"
+        return f"{{[{self.row:2},{self.col:2}], #turns={self.turns}, {move_id_to_move_name(self.last_move_id)}}}"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -57,7 +59,6 @@ class Entry:
     def __iter__(self):
         yield self.row
         yield self.col
-        yield self.cost
         yield self.turns
         yield self.last_move_id
 
@@ -105,13 +106,15 @@ class Solution:
         ]
         # The cost of reaching 0,0 in any number of turns from any direction is always grid[0][0].
         min_cost[0][0][:] = [[grid[0][0] for _ in range(4)]] * (k + 1)
-        q = deque([Entry(0, 0, grid[0][0], 0, 4)])
+        pq = [(grid[0][0], Entry(0, 0, 0, 4))]
         overall_min_cost = INF
-        while q:
-            q_entry = q.popleft()
-            row, col, cost, turns, last_move_id = q_entry
+        while pq:
+            cost, q_entry = heappop(pq)
+            row, col, turns, last_move_id = q_entry
             log(
-                lambda q_entry=q_entry: f"popped {q_entry} => q={truncate_param(q)}",
+                lambda cost=cost, q_entry=q_entry: (
+                    f"popped {cost}, {q_entry} => q={pq}"
+                ),
                 sleep_duration=0.1,
                 nop=False,
             )
@@ -166,14 +169,13 @@ class Solution:
                             appended_entry = Entry(
                                 next_cell_row,
                                 next_cell_col,
-                                next_cell_new_min_cost,
                                 turns,
                                 move_id,
                             )
-                            q.append(appended_entry)
+                            heappush(pq, (next_cell_new_min_cost, appended_entry))
                             log(
-                                lambda appended_entry=appended_entry: (
-                                    f"  appended {appended_entry} => q={truncate_param(q)}"
+                                lambda next_cell_new_min_cost=next_cell_new_min_cost, appended_entry=appended_entry: (
+                                    f"  appended {next_cell_new_min_cost},{appended_entry} => q={pq}"
                                 ),
                                 nop=True,
                             )
@@ -190,14 +192,13 @@ class Solution:
                         appended_entry = Entry(
                             next_cell_row,
                             next_cell_col,
-                            next_cell_new_min_cost,
                             turns + 1,
                             move_id,
                         )
-                        q.append(appended_entry)
+                        heappush(pq, (next_cell_new_min_cost, appended_entry))
                         log(
-                            lambda appended_entry=appended_entry: (
-                                f"  appended {appended_entry} => q={truncate_param(q)}"
+                            lambda next_cell_new_min_cost=next_cell_new_min_cost, appended_entry=appended_entry: (
+                                f"  appended {next_cell_new_min_cost},{appended_entry} => q={pq}"
                             ),
                             nop=True,
                         )
