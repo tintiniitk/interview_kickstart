@@ -1,35 +1,6 @@
-from collections import deque
-
-
-# Definition for a binary tree node.
-class TreeNode:
-    val: int
-    left: "TreeNode | None" = None
-    right: "TreeNode | None" = None
-
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
-
-    def __str__(self) -> str:
-        if not self:
-            return ""
-        s = f"[{self.val}"
-        q = deque([self.left, self.right])
-        while q:
-            n = q.popleft()
-            if n is None:
-                s += ",null"
-            else:
-                s += f",{n.val}"
-                if n.left or n.right:
-                    q.append(n.left)
-                    q.append(n.right)
-        return s + "]"
-
-
 from collections.abc import Callable
+
+from utils.collections.BinaryTree import TreeNode
 
 DEBUGGING = True
 
@@ -82,21 +53,9 @@ class Solution:
 
 import sys
 
+from utils.collections.BinaryTree import eq_TreeNode
 from utils.context_manager import TimeoutException, time_limit
 from utils.pretty_test_runner import pretty_test_runner
-
-
-def eq_TreeNode(n1: TreeNode | None, n2: TreeNode | None) -> bool:
-    if n1 and not n2:
-        return False
-    if n2 and not n1:
-        return False
-    if not n1 and not n2:
-        return True
-    assert n1 and n2
-    if n1.val != n2.val:
-        return False
-    return eq_TreeNode(n1.left, n2.left) and eq_TreeNode(n1.right, n2.right)
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
