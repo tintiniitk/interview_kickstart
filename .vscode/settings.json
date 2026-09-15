@@ -9,5 +9,7 @@
             "source.fixAll.ruff": "explicit"
         }
     },
-    "ruff.fixAll": true
+    "ruff.fixAll": true,
+    // disable vim extension by default. It'll turn on automatically on Ctrl+Alt+v in editor.
+    "vim.disableExtension": true
 }
