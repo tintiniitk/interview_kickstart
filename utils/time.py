@@ -32,3 +32,20 @@ def format_minimal_seconds(total_seconds: float) -> str:
         return "0µs"
 
     return " ".join(parts)
+
+
+def main():
+    def test_format_minimal_seconds():
+        assert format_minimal_seconds(0) == "0µs"
+        assert format_minimal_seconds(1) == "1s"
+        assert format_minimal_seconds(1e-3) == "1ms"
+        assert format_minimal_seconds(1e-6) == "1µs"
+        assert format_minimal_seconds(1.5) == "1s 500ms"
+        assert format_minimal_seconds(1.55010) == "1s 550ms 100µs"
+        assert format_minimal_seconds(0.55010) == "550ms 100µs"
+
+    test_format_minimal_seconds()
+
+
+if __name__ == "__main__":
+    main()
