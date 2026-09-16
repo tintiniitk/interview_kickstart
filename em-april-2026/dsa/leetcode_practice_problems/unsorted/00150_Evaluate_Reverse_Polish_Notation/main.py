@@ -2,7 +2,7 @@ class Solution:
     def evalRPN(self, tokens: list[str]) -> int:
         stack = []
 
-        def get_operands() -> (int, int):
+        def get_operands() -> tuple[int, int]:
             val1, val2 = None, None
             if not stack:
                 raise ValueError("stack is empty")

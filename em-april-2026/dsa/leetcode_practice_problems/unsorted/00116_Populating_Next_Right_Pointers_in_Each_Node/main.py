@@ -25,9 +25,6 @@ class Node:
         self.next = next
 
 
-from collections import deque
-
-
 class Solution:
     def connect(self, root: "Node | None") -> "Node | None":
         if not root:

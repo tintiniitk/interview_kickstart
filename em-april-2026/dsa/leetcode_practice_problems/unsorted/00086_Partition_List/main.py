@@ -38,7 +38,8 @@ class Solution:
             return head_of_second
         if not head_of_second:
             return head_of_first
-        last_of_first.next = head_of_second
+        if last_of_first:
+            last_of_first.next = head_of_second
         return head_of_first
 
 
@@ -84,7 +85,7 @@ def main():
                 x=6,
                 expected=ListNode(2, ListNode(3, ListNode(5, ListNode(4)))),
             )
-            Test(head=None, x=6, expected=[])
+            Test(head=None, x=6, expected=None)
             Test(head=ListNode(5), x=6, expected=ListNode(5))
             Test(head=ListNode(7), x=7, expected=ListNode(7))
     except TimeoutException as te:

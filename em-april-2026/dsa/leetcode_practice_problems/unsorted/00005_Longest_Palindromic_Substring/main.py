@@ -1,5 +1,5 @@
 class Solution:
-    def longestPalindrome(self, s: str) -> str:
+    def longestPalindrome(self, s: str) -> str | None:
         if not s:
             return None
         n = len(s)
@@ -35,7 +35,7 @@ from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
-def Test(s: str, expected: str) -> tuple[bool, str]:
+def Test(s: str, expected: str | None) -> tuple[bool, str]:
     actual = Solution().longestPalindrome(s)
     if actual != expected:
         return False, f"got={actual}, wanted={expected}"
@@ -46,6 +46,7 @@ def main():
     try:
         print("Running tests ...")
         with time_limit(5):
+            Test(s="", expected=None)
             Test(s="babad", expected="bab")
             Test(s="cbbd", expected="bb")
             Test(s="a", expected="a")

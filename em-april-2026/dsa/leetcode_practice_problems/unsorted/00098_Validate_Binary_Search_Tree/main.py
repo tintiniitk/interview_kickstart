@@ -17,7 +17,7 @@ class Solution:
                 and (not node.right or isValidNode(node.right, node.val + 1, max_val))
             )
 
-        return isValidNode(root, -(2**31), 2**31 - 1)
+        return isValidNode(root, -(2**31), 2**31 - 1) if root else True
 
 
 import sys

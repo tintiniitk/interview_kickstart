@@ -37,7 +37,7 @@ class MinStack:
         return self.__str__()
 
 
-def operate(ops: list[str], values: list[list[int | None]]) -> list[int | None]:
+def operate(ops: list[str], values: list[list[int]]) -> list[int | None]:
     stack = None
 
     def per_operate(op: str, val: int | None) -> None | int:
@@ -47,12 +47,16 @@ def operate(ops: list[str], values: list[list[int | None]]) -> list[int | None]:
                 stack = MinStack()
                 log(lambda stack=stack: f"stack created => {stack}")
             case "push":
+                assert val is not None
+                assert stack is not None
                 stack.push(val)
                 log(lambda stack=stack: f"pushed {val} into stack => {stack}")
             case "pop":
+                assert stack is not None
                 stack.pop()
                 log(lambda stack=stack: f"stack popped => {stack}")
             case "top":
+                assert stack is not None
                 val_returned = stack.top()
                 log(
                     lambda val_returned=val_returned: (
@@ -61,6 +65,7 @@ def operate(ops: list[str], values: list[list[int | None]]) -> list[int | None]:
                 )
                 return val_returned
             case "getMin":
+                assert stack is not None
                 val_returned = stack.getMin()
                 log(
                     lambda val_returned=val_returned: (
@@ -83,7 +88,7 @@ from utils.pretty_test_runner import pretty_test_runner
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
 def Test(
-    ops: list[str], values: list[int | None], expected: list[int | None]
+    ops: list[str], values: list[list[int]], expected: list[int | None]
 ) -> tuple[bool, str]:
     actual = operate(ops, values)
     if actual != expected:

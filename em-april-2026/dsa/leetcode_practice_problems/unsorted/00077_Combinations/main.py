@@ -13,7 +13,7 @@ from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
-def Test(n: int, k: int, expected: int) -> tuple[bool, str]:
+def Test(n: int, k: int, expected: list[list[int]]) -> tuple[bool, str]:
     actual = Solution().combine(n, k)
     if sorted(actual) != sorted(expected):
         return False, f"got={actual}, wanted={expected}"

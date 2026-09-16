@@ -56,7 +56,7 @@ def create_palindromes(seed_digits: list[int]) -> list[int]:
     return palindromes
 
 
-def precompute_palindromes():
+def precompute_palindromes() -> None:
     global EVEN_PALINDROMES
     global ODD_PALINDROMES
     if not EVEN_PALINDROMES:
@@ -103,6 +103,7 @@ class Solution:
             if areDigitsPalindrome(digits):
                 return 0
             l = EVEN_PALINDROMES if num % 2 == 0 else ODD_PALINDROMES
+            assert l is not None
             min_diff = abs(
                 binary_search_smallest_diff_in_sorted_list(l, num, 0, len(l) - 1)
             )
