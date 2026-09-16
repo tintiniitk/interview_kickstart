@@ -1,4 +1,3 @@
-from functools import cache
 from math import floor, log10
 
 
@@ -35,9 +34,7 @@ def num2digits(num: int) -> list[int]:
     return [int(d) for d in str(num)]
 
 
-@cache
 def pow_mod_base(x: int, y: int, mod_base: int = 1) -> int:
-    print(f"pow_mod_base({x}, {y}, {mod_base})")
     assert mod_base > 0
     assert y >= 0
     if y == 0:
