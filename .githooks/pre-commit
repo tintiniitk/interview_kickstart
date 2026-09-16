@@ -42,13 +42,22 @@ UNSORTED_DIR="em-april-2026/dsa/leetcode_practice_problems/unsorted"
 STAGED_TARGETS=$(echo "$STAGED_FILES" | grep -E "^(utils/|${UNSORTED_DIR}/).*\.py$")
 
 if [ -n "$STAGED_TARGETS" ]; then
+    test_dirs_to_run= # default empty, for all.
+    if ! ( echo ${STAGED_TARGETS} | grep utils ) ; then
+        # if there was no change in the utils, then only run the affected test directories.
+        test_dirs_to_run=
+        for STAGED_TARGET in ${STAGED_TARGETS} ; do
+            test_dirs_to_run+=$(basename $(dirname $STAGED_TARGET))" "
+        done
+        test_dirs_to_run=$(echo ${test_dirs_to_run} | tr -s ' ' '\n' | sort | uniq | tr -s '\n' ' ')
+    fi
     if [ -f "${UNSORTED_DIR}/run_all.sh" ]; then
         echo "Changes detected in utils/ or unsorted/. Executing run_all.sh..."
 
         # Execute run_all.sh inside its native directory using a subshell
         (
             cd "$UNSORTED_DIR" || exit 1
-            bash ./run_all.sh
+            bash ./run_all.sh ${test_dirs_to_run}
         )
         if [ $? -ne 0 ]; then
             echo "❌ Script run_all.sh failed."
