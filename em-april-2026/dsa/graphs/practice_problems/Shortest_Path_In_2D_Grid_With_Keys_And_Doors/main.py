@@ -5,22 +5,25 @@ TYPE_LAND = 2
 TYPE_WATER = 3
 TYPE_DOOR = 4
 TYPE_KEY = 5
-types_str = ['start','end','land','water','door','key']
+types_str = ["start", "end", "land", "water", "door", "key"]
 
-from typing import NamedTuple
 from collections import deque
+from typing import NamedTuple
+
 
 class Visited(NamedTuple):
-    yes: bool = False
-    keys: set[int] = set()
+    yes: bool
+    keys: set[int]
+
 
 class BFSQueueEntry(NamedTuple):
-    node: int = -1
-    keys: set[int] = set()
-    path: list[int] = []
+    node: int
+    keys: set[int]
+    path: list[int]
+
 
 def key_or_door(cell_value: str) -> tuple[int, int]:
-    """ returns TYPE_KEY if key else TYPE_DOOR, index of lock/key (0-9) . """
+    """returns TYPE_KEY if key else TYPE_DOOR, index of lock/key (0-9) ."""
     ord_of_cell_value = ord(cell_value)
     if ord_of_cell_value >= ord("A") and ord_of_cell_value <= ord("J"):
         return TYPE_DOOR, ord_of_cell_value - ord("A")
@@ -28,17 +31,19 @@ def key_or_door(cell_value: str) -> tuple[int, int]:
         return TYPE_KEY, ord_of_cell_value - ord("a")
     raise ValueError(f"Cell value {cell_value} is not a valid key/door value")
 
+
 def type_of_cell(cell_value: str) -> tuple[int, int]:
     match cell_value:
-        case '@':
+        case "@":
             return TYPE_START, -1
-        case '+':
+        case "+":
             return TYPE_END, -1
-        case '.':
+        case ".":
             return TYPE_LAND, -1
-        case '#':
+        case "#":
             return TYPE_WATER, -1
     return key_or_door(cell_value)
+
 
 def find_shortest_path(grid):
     """
@@ -59,7 +64,7 @@ def find_shortest_path(grid):
     n = num_cells
 
     # assuming each row has len = cols
-    nbr_offsets = [-1,1,-cols,cols]
+    # nbr_offsets = [-1, 1, -cols, cols]
 
     # secondary derivative data
     types = [TYPE_INVALID for _ in range(n)]
@@ -87,34 +92,40 @@ def find_shortest_path(grid):
     if start_cell_index == end_cell_index:
         return [start_cell_index]
     if start_cell_index < 0 or start_cell_index >= n:
-        raise ValueError(f"No start-cell found in the grid")
+        raise ValueError("No start-cell found in the grid")
     if end_cell_index < 0 or end_cell_index >= n:
-        raise ValueError(f"No end-cell found in the grid")
+        raise ValueError("No end-cell found in the grid")
     # print(f"doors_and_keys={doors_and_keys}")
     # print(f"start_cell_index={start_cell_index},end_cell_index={end_cell_index}")
 
     def get_valid_nxt_nodes(node: int) -> list[int]:
         valid_nxt_nodes = []
         col_num = node % cols
-        if (col_num != 0) and node > 0: # leftmost cell has no left neighbor
+        if (col_num != 0) and node > 0:  # leftmost cell has no left neighbor
             valid_nxt_nodes.append(node - 1)
-        if (col_num != (cols - 1)) and node < (n-1): # rightmost cell has no right neighbor
+        if (col_num != (cols - 1)) and node < (
+            n - 1
+        ):  # rightmost cell has no right neighbor
             valid_nxt_nodes.append(node + 1)
-        if (node - cols) >= 0: # top neighbor
+        if (node - cols) >= 0:  # top neighbor
             valid_nxt_nodes.append(node - cols)
-        if (node + cols) < n: # top neighbor
+        if (node + cols) < n:  # top neighbor
             valid_nxt_nodes.append(node + cols)
         return list(filter(lambda node: types[node] != TYPE_WATER, valid_nxt_nodes))
 
     # find paths - using BFS
-    visited = [Visited() for _ in range(n)]
+    visited = [Visited(False, set()) for _ in range(n)]
     min_path_len = 2e9
     min_path = []
-    q = deque([BFSQueueEntry(node=start_cell_index)])
+    q = deque([BFSQueueEntry(start_cell_index, set(), [])])
     while q:
         node, keys_so_far_orig, current_path_orig = q.popleft()
-        keys_so_far = keys_so_far_orig.copy() # create a copy to avoid modifying the existing entry.
-        current_path = current_path_orig.copy() # create a copy to avoid modifying the existing entry.
+        keys_so_far = (
+            keys_so_far_orig.copy()
+        )  # create a copy to avoid modifying the existing entry.
+        current_path = (
+            current_path_orig.copy()
+        )  # create a copy to avoid modifying the existing entry.
         # indentation='  '*len(current_path)
         # print(f"{indentation}Exploring {str([[cell//cols,cell%cols] for cell in current_path]):<40} -> {str([node//cols,node%cols]):<6}")
         # print(f"{indentation}  .. with keys={keys_so_far_orig}")
@@ -129,9 +140,11 @@ def find_shortest_path(grid):
                 # print(f"{indentation}  {prefix}but failed to update existing min_path {str([[cell//cols,cell%cols] for cell in min_path]):<40}")
                 ...
             continue
-        if len(current_path) + 2 >= min_path_len: # there are minimum 2 more nodes to be added current_path i.e. node, end-node
-        # and if they are not going to improve over the existing known min_path_len, then
-        # it's pointless proceed down this path.
+        if (
+            len(current_path) + 2 >= min_path_len
+        ):  # there are minimum 2 more nodes to be added current_path i.e. node, end-node
+            # and if they are not going to improve over the existing known min_path_len, then
+            # it's pointless proceed down this path.
             # print(f"{indentation}  this path is already too expensive, so skipping it ...")
             continue
         # no need to check explicitly of water cell as it's been ignored while defining next nodes
@@ -160,10 +173,10 @@ def find_shortest_path(grid):
 
 
 def main():
-    grid=["+B...", "####.", "##b#.", "a...A", "##@##"]
+    grid = ["+B...", "####.", "##b#.", "a...A", "##@##"]
     # grid = [".dj##.f.j#efejj..@e#+G.c.", ".hdI#.#aAghficDe#J.CGa.ba"]
     # grid=[".bddfCeCAeaEF.##I#Ga.#.e..#J..jDg#.", "CfbAjeje.#IJde#da#hH##.fhCa#.j#cAgg", "hJhb#.jDcgdC#i.JJBc##Had..b#.jd..bi", "a..iAcch.gfhGJaD.#fIdb#h#I.eaA#AeHf", "G.b.H.aI..fH#FcF#hh.Ci.i.#d..E..#.f", "#E#Da##Hhc#....#BDjBg.fgD.hgJe#ffja", "EabgD#B#GAbhcaF.dBBghaC#.D.B.#.f.A#", "ia.ADf.hCi.e.##.....g#hdb#j#JH.Ehgj", "fiGEJgIdfE.#H.##.a.+.d.ggegb#.#.IaI", "HaejJfhC.EHija#.dG#JcE.#fdgGei#ej.#", "b..gAf#.Ejg.hg.ebf#.f#JcgGah##.#..#", "d.a@fffG#b.IE##..j.fJhF..hf.J.gGHA.", "#hhHE.gci#b#hgAHd.Gf#d..ACb##E#DejD", "C.h.ABiah.iDB.#.#Ae.Bdd.j#igdh##hdg", ".ebb.gh#.dCeh#.g#ih##HI.#..fa.d.Ba.", "#...#h#.Hda.EG.b.fhb.Iah.#ee.Ieei..", ".#D##ieD#..Eff.cgi.fcaf.HaD#f#ddg#d", "#dcg#ad#bj###F#h##..cE#b#fA.i#F#AF.", "jDh#eGhIAIie.gDb.b..ffg#.E#D#hhc.dj", "Bhg.fibghF.e.ic##.jc#f#a#B#.ediFa..", "B##dBb.J#g#.##jG.BaG..A#.G#cbaGgadi", "ea.AbiafH#cba#g#h.#g.iHHjj#.da...cA", ".#dcA#hGJBFg.###jGe.i#.cfcG###..Dg.", "#fg.IgjgCCi#BDfieAIcAc#.CH.Jf.h.c..", "bf.GF##d.#C#.egch.hf#jf#dfjfeJ.g###", ".IGe#.H#C.gFjd.dBe#.##h.#D...ib.aah", ".a##ghgg.....defc##e.JEeJf..bbff#JB", "b.B.hG.Jg.a#.#a#D.b#da.d#je.ii#..FH", "a#iHeB#c##dJghh#.h#.#Ei#.aF#.f#.#.j", "f.eh#JB#.ag.j.fbh#.j#J#I#jfJE#.G.#d", "##C#d..e#G#hhb.#JdGcGHjg.#eC.G.fA.a", ".#Icb.fgJ..#F#.#bDAch#.Bj.aFFa.I#e.", "eI..Ebahcbc##h.C#gd..ehgfa.#A#g#..j", "dgi#ggc##.#G.jJi#egc.#e#e##ejB#fe#b", "J#GA#I.c.##g.#.ehbjj#jCEC.fd.##h.ij"]
-    shortest_path=find_shortest_path(grid)
+    shortest_path = find_shortest_path(grid)
     print(f"len(shortest_path)={len(shortest_path)},shortest_path={shortest_path}")
 
 

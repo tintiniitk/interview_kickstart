@@ -4,7 +4,7 @@ num_swaps = 0
 
 def merge_sort_internal(arr, helper, start, end):
     global num_comps
-    global num_swaps
+    # global num_swaps
     if end - start < 2:
         return
     mid = (start + end + 1) // 2
@@ -15,7 +15,7 @@ def merge_sort_internal(arr, helper, start, end):
     i = start
     n1 = mid
     n2 = end
-    n = end
+    # n = end
     while i1 < n1 and i2 < n2:
         num_comps = num_comps + 1
         if arr[i2] < arr[i1]:
@@ -37,9 +37,9 @@ def merge_sort_internal(arr, helper, start, end):
         arr[i] = helper[i]
 
 
-def merge_sort(arr) -> (list[int], int, int):
-    global num_comps
-    global num_swaps
+def merge_sort(arr) -> tuple[list[int], int, int]:
+    # global num_comps
+    # global num_swaps
     new_arr = arr.copy()
     helper = new_arr.copy()
     merge_sort_internal(new_arr, helper, 0, len(arr))
@@ -77,7 +77,7 @@ def main():
     for tc in test_cases:
         print(f"Running test: {tc['name']}...")
 
-        actual_output, num_swaps, num_comparisons = merge_sort(tc["input"])
+        actual_output, _, _ = merge_sort(tc["input"])
 
         # 3. assert the results
         if actual_output != tc["expected_output"]:
@@ -87,11 +87,11 @@ def main():
             failed_tests.append(tc["name"])
             continue  # exit early on failure (optional)
         # if num_comparisons != tc["expected_num_comparisons"]:
-            # print(
-                # f"  ❌ fail: expected {tc['expected_num_comparisons']} comparisons, got {num_comparisons}"
-            # )
-            # failed_tests.append(tc["name"])
-            # continue  # exit early on failure (optional)
+        # print(
+        # f"  ❌ fail: expected {tc['expected_num_comparisons']} comparisons, got {num_comparisons}"
+        # )
+        # failed_tests.append(tc["name"])
+        # continue  # exit early on failure (optional)
 
         print("  ✅ pass")
 

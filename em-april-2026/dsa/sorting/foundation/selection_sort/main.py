@@ -2,7 +2,7 @@ def selection_sort(v):
     if len(v) < 2:
         return True
     end = len(v)
-    for start in range(0, end - 1):
+    for start in range(end - 1):
         # print(f"At start = {start}, end = {end} arr = \t\t\t{v}")
         min_value = v[start]
         min_index = start

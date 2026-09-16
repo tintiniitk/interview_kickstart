@@ -1,5 +1,6 @@
-from test_case_13_input import arr as test_case_13_input_arr
 import time
+
+from test_case_13_input import arr as test_case_13_input_arr
 
 
 def swap(arr: list[int], i: int, j: int):

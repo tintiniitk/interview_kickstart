@@ -38,9 +38,9 @@ Worst-case inputs:
 
 """
 
-from dataclasses import dataclass
-from enum import Enum, auto
 import sys
+from dataclasses import dataclass
+from enum import Enum
 
 
 class OpType(Enum):
@@ -99,9 +99,9 @@ def evaluate(s: str) -> int:
 
     def multply_parse(nodes: list[Node]) -> list[Node]:
         if not isinstance(nodes[0].value, int):
-            raise ValueError(f"first node among {nodes} is not a digit")
+            raise TypeError(f"first node among {nodes} is not a digit")
         if not isinstance(nodes[-1].value, int):
-            raise ValueError(f"last node among {nodes} is not a digit")
+            raise TypeError(f"last node among {nodes} is not a digit")
         if len(nodes) % 2 == 0:
             raise ValueError(f"{nodes} is of even length, should be odd!")
         # print(f"Original set of nodes passed to multiply_parse: {nodes}")
@@ -114,11 +114,11 @@ def evaluate(s: str) -> int:
             if not isinstance(op_node.value, OpType) or not isinstance(
                 next_digit_node.value, int
             ):
-                raise ValueError(
+                raise TypeError(
                     f"Failed check op_node is OpType OR next_digit_node is int at i={i} in {nodes}"
                 )
             if op_node.value == OpType.MULTIPLY:
-                prev_node.value *= next_digit_node.value
+                prev_node.value *= next_digit_node.value  # type: ignore
                 del nodes[i : i + 2]
                 # print(
                 #     f"Reduced set of nodes in multiply_parse after removing the operator-node at [{i}] and next-digit-node at [{i+1}]: {nodes}"
@@ -130,9 +130,9 @@ def evaluate(s: str) -> int:
 
     def add_parse(nodes: list[Node]) -> list[Node]:
         if not isinstance(nodes[0].value, int):
-            raise ValueError(f"first node among {nodes} is not a digit")
+            raise TypeError(f"first node among {nodes} is not a digit")
         if not isinstance(nodes[-1].value, int):
-            raise ValueError(f"last node among {nodes} is not a digit")
+            raise TypeError(f"last node among {nodes} is not a digit")
         if len(nodes) % 2 == 0:
             raise ValueError(f"{nodes} is of even length, should be odd!")
         prev_node = nodes[0]
@@ -149,7 +149,7 @@ def evaluate(s: str) -> int:
                 raise ValueError(
                     f"Failed check op_node is PLUS OR next_digit_node is int at i={i} in {nodes}"
                 )
-            prev_node.value += next_digit_node.value
+            prev_node.value += next_digit_node.value  # type: ignore
             del nodes[i : i + 2]
         return nodes
 
@@ -160,7 +160,7 @@ def evaluate(s: str) -> int:
     nodes = add_parse(nodes)
     # print(f"nodes after add parse = {nodes}")
     # print(f"evaluate({s}) = {nodes[0].value}")
-    return nodes[0].value
+    return nodes[0].value  # type: ignore
 
 
 def helper(

@@ -63,13 +63,13 @@ def find_longest_path(dag_nodes, dag_from, dag_to, dag_weight, from_node, to_nod
 
     # sanity testing and edge-cases
     if from_node < 1 or from_node > n:
-        raise ValueError(f"from_node < 1 or from_node > n")
+        raise ValueError("from_node < 1 or from_node > n")
     if to_node < 1 or to_node > n:
-        raise ValueError(f"to_node < 1 or to_node > n")
+        raise ValueError("to_node < 1 or to_node > n")
     if any(dag_from_node < 1 or dag_from_node > n for dag_from_node in dag_from):
-        raise ValueError(f"dag_from_node < 1 or dag_from_node > n")
+        raise ValueError("dag_from_node < 1 or dag_from_node > n")
     if any(dag_to_node < 1 or dag_to_node > n for dag_to_node in dag_to):
-        raise ValueError(f"dag_to_node < 1 or dag_to_node > n")
+        raise ValueError("dag_to_node < 1 or dag_to_node > n")
     if to_node == from_node:
         return [to_node]
 
@@ -80,7 +80,7 @@ def find_longest_path(dag_nodes, dag_from, dag_to, dag_weight, from_node, to_nod
     # to_node -= 1
 
     # print initial debug info
-    print(f"Inputs:")
+    print("Inputs:")
     print(f"n={n}")
     print(f"from_node={from_node}")
     print(f"to_node={to_node}")
@@ -104,7 +104,7 @@ def find_longest_path(dag_nodes, dag_from, dag_to, dag_weight, from_node, to_nod
         # in_lists[dag_to[i]].add(dag_from[i])
         edge_weights[dag_from[i]][dag_to[i]] = dag_weight[i]
 
-    print(f"Derivative variables:")
+    print("Derivative variables:")
     print(f"out_lists={out_lists}")
     print(f"edge_weights={edge_weights}")
 
@@ -119,9 +119,9 @@ def find_longest_path(dag_nodes, dag_from, dag_to, dag_weight, from_node, to_nod
     while stack:
         node, backtracked = stack.pop()
         print(
-            f"Popped ({node:>2}, {str(backtracked):>5}) from stack. "
-            f"path_so_far={str(path_so_far):<15}, " # visiting={str([node for node in range(1,n+1) if visiting[node]]):<15},  
-            f"max_weight_to_to_node={max_weight_to_to_node}, max_weight_path_to_node={str(max_weight_path_to_node):<15} => stack={str(stack):<20}"
+            f"Popped ({node:>2}, {backtracked!s:>5}) from stack. "
+            f"path_so_far={path_so_far!s:<15}, "  # visiting={str([node for node in range(1,n+1) if visiting[node]]):<15},
+            f"max_weight_to_to_node={max_weight_to_to_node}, max_weight_path_to_node={max_weight_path_to_node!s:<15} => stack={stack!s:<20}"
         )
         # print(
         #     f"Popped {node:>2}, {str(backtracked):>5} from stack => {str(stack):<20}"
@@ -134,7 +134,7 @@ def find_longest_path(dag_nodes, dag_from, dag_to, dag_weight, from_node, to_nod
             # print(f"{node} marked as visited")
             if not path_so_far or len(path_so_far) == 0:
                 raise ValueError(
-                    f"Error: path_so_far is empty while backtracking a node !"
+                    "Error: path_so_far is empty while backtracking a node !"
                 )
             if path_so_far[-1] != node:
                 raise ValueError(
@@ -186,12 +186,16 @@ def find_longest_path(dag_nodes, dag_from, dag_to, dag_weight, from_node, to_nod
                 continue
         visiting[node] = True
         stack.append((node, True))
-        print(f"Pushed {node:>2},  True to stack => {str([node for node, backtracking in stack]):<20}")
+        print(
+            f"Pushed {node:>2},  True to stack => {[node for node, backtracking in stack]!s:<20}"
+        )
         path_so_far.append(node)
         for nxt_node in out_lists[node]:
             if not visiting[nxt_node]:
                 stack.append((nxt_node, False))
-                print(f"Pushed {nxt_node:>2}, False to stack => {str([node for node, backtracking in stack]):<20}")
+                print(
+                    f"Pushed {nxt_node:>2}, False to stack => {[node for node, backtracking in stack]!s:<20}"
+                )
                 # print(f"Pushed {nxt_node:>2} to stack => {str(stack):<20}")
 
     # return [node+1 for node in max_weight_path_to_node]

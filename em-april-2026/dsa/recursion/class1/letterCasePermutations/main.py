@@ -19,4 +19,3 @@ def letterCasePermutations(s: str) -> list[str]:
 if __name__ == "__main__":
     s = "cat"
     print(f"s = {s}, permutations={letterCasePermutations(s)}")
-    pass

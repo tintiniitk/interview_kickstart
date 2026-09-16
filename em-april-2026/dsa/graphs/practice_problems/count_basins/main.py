@@ -1,12 +1,4 @@
-import sys
-from typing import NamedTuple
-
-from dataclasses import dataclass
-from collections import deque
-import inputX
-import inputY
 import inputZ
-
 
 Cell = tuple[int, int, int]
 
@@ -64,7 +56,9 @@ def find_basins(matrix):
                             min_nbr_altitude = nbr_altitude
                 if has_lower_neighbor:
                     non_sinks[cell] = (
-                        lowest_neighbor_x, lowest_neighbor_y, min_nbr_altitude
+                        lowest_neighbor_x,
+                        lowest_neighbor_y,
+                        min_nbr_altitude,
                     )
                 else:
                     sinks.add(cell)
@@ -96,7 +90,7 @@ def find_basins(matrix):
         # if count_num_sinks % 50000 == 0:
         # print(f"Remaining {count_num_sinks} out of {len(non_sinks)} ...")
         update_for_non_sink(non_sink)
-        count_num_sinks -= - 1
+        count_num_sinks -= -1
 
     return sorted(basin_sizes.values())
 
@@ -108,4 +102,4 @@ if __name__ == "__main__":
     # expected_output = inputY.expected_output
     basins = find_basins(inputZ.matrix)
     expected_output = inputZ.expected_output
-    print(f"expected-matching={expected_output==basins}")
+    print(f"expected-matching={expected_output == basins}")

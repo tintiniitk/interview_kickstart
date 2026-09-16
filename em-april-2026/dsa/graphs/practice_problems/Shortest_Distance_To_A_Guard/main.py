@@ -49,10 +49,8 @@ Constraints:
 
 """
 
-import sys
-from dataclasses import dataclass
 from collections import deque
-import inputX
+
 import inputY
 
 NEIGHBOR_OFFSETS = ((-1, 0), (1, 0), (0, -1), (0, 1))
@@ -83,7 +81,7 @@ def find_shortest_distance_from_a_guard(grid):
     if h < 1:
         return grid
     if any(not row or len(row) != h for row in grid):
-        raise ValueError(f"grid isn't a rectangle")
+        raise ValueError("grid isn't a rectangle")
     # print_grid(grid)
 
     ret = [
@@ -108,7 +106,9 @@ def find_shortest_distance_from_a_guard(grid):
                 opens.add((i, j))
 
     # @profile
-    def valid_neighbors(node_x: int, node_y: int, dist: int) -> list[tuple[int]]:
+    def valid_neighbors(
+        node_x: int, node_y: int, dist: int
+    ) -> list[tuple[int, int, int]]:
         ret = []
         for nbr_offset in NEIGHBOR_OFFSETS:
             nbr_x = node_x + nbr_offset[0]
@@ -179,7 +179,6 @@ if __name__ == "__main__":
     # print_grid(ret, "final grid")
     # print_grid(expected_output, "expected output")
     print(
-        f"final grid matches={ret==expected_output} len(ret)={len(ret)}, len(expected_output)={len(expected_output)}"
+        f"final grid matches={ret == expected_output} len(ret)={len(ret)}, len(expected_output)={len(expected_output)}"
         # f"final grid matches={ret==expected_output} dims(ret)={len(ret)} x {len(ret[0])}, dims(expected_output)={len(expected_output)} x {len(expected_output[0])}"
     )
-    pass

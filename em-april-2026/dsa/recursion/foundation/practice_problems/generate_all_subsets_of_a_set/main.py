@@ -1,9 +1,7 @@
 import sys
 
 
-def helper(
-    s: list[str], slate: list[str], done: int, filled: int, ret: list[list[str]]
-):
+def helper(s: list[str], slate: list[str], done: int, filled: int, ret: list[str]):
     # print(f"{'.' * done}helper({s},{slate},{done},{filled},{ret})")
     n = len(slate)
     if done == n:

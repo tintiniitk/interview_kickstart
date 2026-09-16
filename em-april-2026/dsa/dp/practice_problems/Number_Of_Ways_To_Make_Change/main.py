@@ -46,7 +46,7 @@ def number_of_ways(coins, amount):
         # print(f"i = {i}")
         # find num_combinations[amount] given num_combinations[i] for all i < amount
         # num_combinations_for_i = 0
-        for j in range(0, n):
+        for j in range(n):
             # print(f"  j = {j}")
             if coins[j] <= i:
                 # print(f"    coins[j] <= i")
@@ -65,13 +65,14 @@ def number_of_ways(coins, amount):
 
 
 def main():
-    coins=[1,2,3]
-    amount=3
+    coins = [1, 2, 3]
+    amount = 3
     if len(sys.argv) >= 2:
         amount = int(sys.argv[1])
         coins = [int(arg) for arg in sys.argv[2:]]
-    num_combinations=number_of_ways(coins, amount)
+    num_combinations = number_of_ways(coins, amount)
     print(f"num_combinations = {num_combinations}")
+
 
 if __name__ == "__main__":
     main()

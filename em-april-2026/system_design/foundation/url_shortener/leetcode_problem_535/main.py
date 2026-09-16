@@ -15,7 +15,7 @@ def encode_in_base64(counter) -> str:
 
 class Codec:
     def __init__(self):
-        self.mappings = dict()
+        self.mappings = {}
         self.counter = 1
         self.prefix = "https://leetcode.com/problems/"
 

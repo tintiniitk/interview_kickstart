@@ -7,10 +7,7 @@ Given a variety of coin denominations existing in a currency system, find the to
 Example
 -------
 ```py
-{
-"coins ": [1, 2, 3],
-"amount": 3
-}
+{"coins ": [1, 2, 3], "amount": 3}
 ```
 Output: 3
 

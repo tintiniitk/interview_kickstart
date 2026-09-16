@@ -58,6 +58,7 @@ def print_strboard(board: StrBoard, name: str, prefix: str = ""):
         spaced_s = " ".join(s)
         print(f"{prefix}{spaced_s}")
 
+
 def find_all_arrangements(n: int) -> StrBoards:
     """
     Args:
@@ -81,7 +82,7 @@ def find_all_arrangements(n: int) -> StrBoards:
     negative_diagnoals_occupied = []
 
     def solve(row: int):
-        prefix = f"{'.'*row}"
+        # prefix = f"{'.' * row}"
         # print(
         #     f"{prefix} solve({row}, queen_positions={queen_positions}, columns_occupied={columns_occupied}, positive_diagonals_occupied={positive_diagonals_occupied}, negative_diagnoals_occupied={negative_diagnoals_occupied})"
         # )

@@ -21,9 +21,10 @@ def letter_case_permutations(s: str) -> list[str]:
     """
     # Write your code here.
     ret = list[str]()
-    helper(s, 0, ['.']*len(s), ret)
+    helper(s, 0, ["."] * len(s), ret)
     return ret
 
+
 if __name__ == "__main__":
-	s= "1g2F"
-	print(f"letter_case_permutations({s}) = {letter_case_permutations(s)}")
+    s = "1g2F"
+    print(f"letter_case_permutations({s}) = {letter_case_permutations(s)}")

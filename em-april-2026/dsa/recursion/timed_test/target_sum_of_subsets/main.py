@@ -7,9 +7,7 @@ def helper(k: int, arr: list[int], index: int, sumSoFar: int, countSoFar: int) -
     if helper(k, arr, index + 1, sumSoFar + arr[index], countSoFar + 1):
         return True
     # exclude
-    if helper(k, arr, index + 1, sumSoFar, countSoFar):
-        return True
-    return False
+    return helper(k, arr, index + 1, sumSoFar, countSoFar)
 
 
 def check_if_sum_possible(arr: list[int], k: int) -> bool:

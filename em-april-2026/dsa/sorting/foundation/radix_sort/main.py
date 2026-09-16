@@ -34,7 +34,7 @@ def radix_sort(arr: list[int]) -> list[int]:
                 i = i + len(bucket)
         # print(f"  At the end of iteration #{iter}, arr = {arr}")
         power = power * BASE
-        ++iter
+        iter += 1
     # Write your code here.
     return arr
 

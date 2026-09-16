@@ -1,5 +1,6 @@
 import sys
 
+
 def helper(
     remaining: list[int],
     slate: list[int],
@@ -38,5 +39,5 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
         n = int(sys.argv[1])
         k = int(sys.argv[2])
-    combinations = find_combinations(n,k)
+    combinations = find_combinations(n, k)
     # print(f"find_combinations({n}, {k}) = {combinations}")

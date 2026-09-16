@@ -75,10 +75,10 @@ def solve_sudoku_puzzle(board: Board) -> Board:
         if any(0 in row for row in board):
             return False
         for row in board:
-            if not sorted(row) == ideal_filled_list:
+            if sorted(row) != ideal_filled_list:
                 return False
         for col in zip(*board):
-            if not sorted(col) == ideal_filled_list:
+            if sorted(col) != ideal_filled_list:
                 return False
         for r in range(0, 9, 3):
             for c in range(0, 9, 3):
@@ -91,7 +91,7 @@ def solve_sudoku_puzzle(board: Board) -> Board:
     def solve(unfilled_cell_index: int) -> bool:
         # print_board(slate, "slate")
         # print(
-            # f"{'....'*unfilled_cell_index}solve({unfilled_cells[unfilled_cell_index:min(len(unfilled_cells), unfilled_cell_index+1)]})"
+        # f"{'....'*unfilled_cell_index}solve({unfilled_cells[unfilled_cell_index:min(len(unfilled_cells), unfilled_cell_index+1)]})"
         # )
         if unfilled_cell_index == len(unfilled_cells):
             if verify(slate):
@@ -149,7 +149,7 @@ def solve_sudoku_puzzle(board: Board) -> Board:
 
     if solve(0):
         return board
-    print(f"Failed to solve board")
+    print("Failed to solve board")
     # print_board(board, "board")
     return board
 

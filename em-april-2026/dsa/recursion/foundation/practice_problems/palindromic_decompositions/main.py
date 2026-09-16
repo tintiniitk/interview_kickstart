@@ -56,7 +56,6 @@ def main():
     if len(sys.argv) > 1:
         s = " ".join(sys.argv[1:])
     print(f"palindromic_decompositions({s}) = {palindromic_decompositions(s)}")
-    pass
 
 
 if __name__ == "__main__":

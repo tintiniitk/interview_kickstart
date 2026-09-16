@@ -42,4 +42,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
         a = int(sys.argv[1])
         b = int(sys.argv[2])
-    print(f"calculate_power({a},{b}) = {calculate_power(a,b)}")
+    print(f"calculate_power({a},{b}) = {calculate_power(a, b)}")

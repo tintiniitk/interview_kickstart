@@ -1,6 +1,3 @@
-import sys
-
-
 def can_be_completed(n, a, b):
     """
     Args:
@@ -85,7 +82,6 @@ def main():
         print(f"a={a}")
         print(f"b={b}")
     print(f"expected_output={expected_output},output={output}")
-    pass
 
 
 if __name__ == "__main__":

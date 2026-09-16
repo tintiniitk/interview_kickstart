@@ -16,7 +16,7 @@ def dist(word1: str, word2: str) -> int:
 
 
 # @profile
-def string_transformation(words, start, stop):
+def string_transformation(words: list[str], start: str, stop: str) -> list[str]:
     """
     Args:
      words(list_str)
@@ -27,7 +27,7 @@ def string_transformation(words, start, stop):
     """
     # Write your code here.
     if not start or not stop:
-        raise ValueError(f"At least one out of start and stop is null")
+        raise ValueError("At least one out of start and stop is null")
     n = len(start)
     if n != len(stop):
         raise ValueError(f"start={start} and stop={stop} have different lengths.")
@@ -36,14 +36,14 @@ def string_transformation(words, start, stop):
     if dist(start, stop) == 1:
         return [start, stop]
     words_set = set(words)
-    visited = set()
-    min_path_length = len(words_set) + 3
+    # visited = set()
+    min_path_length = (
+        len(words_set) + 3
+    )  # Any legitimate path will really be shorter than this.
     min_length_path = []
-    alphabet = list("abcdefghijklmnopqrstuvwxy")
+    alphabet = list("abcdefghijklmnopqrstuvwxyz")
     q = deque([([start], -1)])
-    min_distance_path_from = {word: None for word in words_set}
-    min_distance_path_from[stop] = []
-    min_distance_path_from[start] = None
+    min_distance_path_from: dict[str, list[str]] = {stop: [stop]}
 
     while len(q) > 0:
         path, lastCharIndexChanged = q.popleft()
@@ -59,7 +59,7 @@ def string_transformation(words, start, stop):
                 for i in range(path_length - 1):
                     w = path[i]
                     new_min_distance_path_from_w = path[i + 1 :]
-                    if not min_distance_path_from[w] or len(
+                    if w not in min_distance_path_from or len(
                         min_distance_path_from[w]
                     ) > len(new_min_distance_path_from_w):
                         min_distance_path_from[w] = new_min_distance_path_from_w
@@ -99,7 +99,7 @@ def string_transformation(words, start, stop):
             c = word[i]
             for new_char in alphabet:
                 # print(f"new_char={new_char}")
-                if not new_char == c:
+                if new_char != c:
                     new_word[i] = new_char
                     new_word_str = "".join(new_word)
                     # print(f"new_word_str={new_word_str}")

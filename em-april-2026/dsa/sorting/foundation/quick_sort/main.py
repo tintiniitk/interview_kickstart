@@ -1,6 +1,6 @@
-from lomuto_partitioning.partition import partition as lomuto_partition
-from hoare_partitioning.partition import partition as hoare_partition
 import time
+
+from hoare_partitioning.partition import partition as hoare_partition
 
 # partition_strategy = lomuto_partition
 partition_strategy = hoare_partition
@@ -26,8 +26,8 @@ def main():
     test_cases = [
         {
             "name": "Very large already sorted array",
-            "input": [i for i in range(0, 500000)],
-            "expected_output": [i for i in range(0, 500000)],
+            "input": [i for i in range(500000)],
+            "expected_output": [i for i in range(500000)],
         },
         {
             "name": "Already sorted",

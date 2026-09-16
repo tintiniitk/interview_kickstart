@@ -1,10 +1,10 @@
-def bubble_sort(arr) -> (int, int):
+def bubble_sort(arr) -> tuple[int, int]:
     if len(arr) < 2:
         return (0, 0)
     n = len(arr)
     num_swaps = 0
     num_comparisons = 0
-    for fin in range(0, n):
+    for fin in range(n):
         # print(f"At fin = {fin} , arr = \t\t\t{arr}, num_swaps = {num_swaps}, num_comparisons = {num_comparisons}")
         for start in range(n - 1, fin, -1):
             num_comparisons = num_comparisons + 1

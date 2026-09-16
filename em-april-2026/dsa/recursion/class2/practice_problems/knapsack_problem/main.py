@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 import sys
+from dataclasses import dataclass
 
 
 @dataclass
@@ -34,7 +34,7 @@ class Solution:
         final: bool,
     ):
         # print(
-            # f"{'.'*nextItemIndex}helper(max={self.max_value_so_far}, slate={[item.Name for item in slate]}, items={items[nextItemIndex:] if nextItemIndex < len(items) else []}, weight_so_far={weight_so_far}, value_so_far={value_so_far}, final={final}"
+        # f"{'.'*nextItemIndex}helper(max={self.max_value_so_far}, slate={[item.Name for item in slate]}, items={items[nextItemIndex:] if nextItemIndex < len(items) else []}, weight_so_far={weight_so_far}, value_so_far={value_so_far}, final={final}"
         # )
         if final:
             if value_so_far >= self.max_value_so_far:

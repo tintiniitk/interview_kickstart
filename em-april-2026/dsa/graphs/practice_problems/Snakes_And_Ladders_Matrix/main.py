@@ -54,20 +54,11 @@ No snake or ladder starts from a cell where another snake or ladder arrives.
 """
 
 import sys
-import heapq
 from heapq import heappop, heappush
-from line_profiler import profile
-import test00
-import test01
-import test02
-import test03
-import test04
-import test05
-import test06
+
 import test07
-import test08
-import test09
-import test10
+
+# from line_profiler import profile
 
 DICE_SIZE = 6
 TYPE_SNAKE = 2
@@ -75,7 +66,7 @@ TYPE_LADDER = 1
 TYPE_NORMAL = 0
 
 
-@profile
+# @profile
 def minimum_number_of_rolls(n, moves):
     """
     Args:
@@ -112,7 +103,7 @@ def minimum_number_of_rolls(n, moves):
     ]  # list of (ladder_base,ladder_tail)
     print(f"ladders={ladders}")
 
-    @profile
+    # @profile
     def has_no_path():
         # there is no path if there are 6 consecutive snake heads without any ladders across it
         if n >= (DICE_SIZE + 1):
@@ -149,7 +140,7 @@ def minimum_number_of_rolls(n, moves):
     if has_no_path():
         return -1
 
-    @profile
+    # @profile
     def create_edge_lists() -> list[list[int]]:
         ret = [[] for _ in range(n)]
         for pos in range(n):
@@ -165,12 +156,12 @@ def minimum_number_of_rolls(n, moves):
         return ret
 
     # DP - djikstra's algorithm
-    @profile
+    # @profile
     def min_rolls_from(start: int) -> int:
         min_num_rolls = {start: 0}
         edge_lists = create_edge_lists()
         pq = [(0, start)]
-        print(f"num_edges={sum([len(edge_list) for edge_list in edge_lists])//2}")
+        print(f"num_edges={sum([len(edge_list) for edge_list in edge_lists]) // 2}")
         while pq:
             num_rolls, pos = heappop(pq)
             if pos == last:
@@ -188,11 +179,12 @@ def minimum_number_of_rolls(n, moves):
 
 
 if __name__ == "__main__":
+    expected_min_moves = None
     if len(sys.argv) > 2:
         n = int(sys.argv[1])
         if len(sys.argv) - 2 != n:
             raise ValueError(
-                f"Number of input arguments on the CLI isn't correct. Identified n = {n}. Expected {n} more arguments after n, but found {len(sys.argv)-2}"
+                f"Number of input arguments on the CLI isn't correct. Identified n = {n}. Expected {n} more arguments after n, but found {len(sys.argv) - 2}"
             )
         moves = [
             int(arg[:-1]) if not arg[-1].isdigit() else int(arg) for arg in sys.argv[2:]

@@ -1,4 +1,4 @@
-def insertion_sort(arr) -> (int, int):
+def insertion_sort(arr) -> tuple[int, int]:
     if len(arr) < 2:
         return (0, 0)
     n = len(arr)

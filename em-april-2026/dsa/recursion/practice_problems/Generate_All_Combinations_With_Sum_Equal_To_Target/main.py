@@ -1,5 +1,3 @@
-import sys
-
 """
 
 Problem
@@ -106,4 +104,3 @@ if __name__ == "__main__":
     target = 300
     actual_output = generate_all_combinations(arr, target)
     print(f"arr={arr}, actual_output={actual_output}")
-    pass

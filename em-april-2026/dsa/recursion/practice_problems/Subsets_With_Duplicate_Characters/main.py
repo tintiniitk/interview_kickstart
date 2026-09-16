@@ -43,7 +43,7 @@ def helper(
         return
     next_char = unique_chars[0]
     next_char_freq = freq[next_char]
-    for i in range(0, next_char_freq + 1):
+    for i in range(next_char_freq + 1):
         slate[filled : filled + i] = [next_char] * i
         helper(freq, unique_chars[1:], slate, done + next_char_freq, filled + i, ret)
 
@@ -56,7 +56,7 @@ def get_distinct_subsets(s: str) -> list[str]:
      list_str
     """
     # Write your code here.
-    s = "".join(sorted(list(s)))
+    s = "".join(sorted(s))
     freq = {}
     for c in s:
         if c in freq:
@@ -78,4 +78,3 @@ if __name__ == "__main__":
         expected_output = ["", "a", "aa", "aab", "ab", "b"]
     actual_output = get_distinct_subsets(s)
     print(f"s={s}, expected_output={expected_output}, actual_output={actual_output}")
-    pass

@@ -1,3 +1,7 @@
+from functools import cache
+
+
+@cache
 def pow(a: int, p: int, depth: int) -> int:
     print(f"{' ' * depth} called pow({a}, {p})")
     if p <= 0:
@@ -5,13 +9,13 @@ def pow(a: int, p: int, depth: int) -> int:
     if p == 1:
         return a
     if p % 2 == 0:
-        return pow(a, p / 2, depth + 1) * pow(a, p / 2, depth + 1)
+        return pow(a, p // 2, depth + 1) ** 2
     else:
-        return pow(a, p // 2, depth + 1) * pow(a, p // 2, depth + 1) * a
+        return pow(a, p // 2, depth + 1) ** 2 * a
 
 
 if __name__ == "__main__":
     a = 2
     p = 5
     depth = 0
-    print(f"pow({a}, {p}) = {pow(a,p,depth)}")
+    print(f"pow({a}, {p}) = {pow(a, p, depth)}")

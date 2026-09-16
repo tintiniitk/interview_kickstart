@@ -1,12 +1,10 @@
-from typing import List
-
 """
 implement a stack using an array. Implement, push, pop, and peek.
 """
 
 
 class myStack:
-    arr: List[int]
+    arr: list[int]
     n: int
     end: int = 0
 
@@ -23,24 +21,24 @@ class myStack:
         return self.end == self.n
 
     def peek(self) -> int:
-        print(f"peek()")
+        print("peek()")
         if self.end == 0:
-            raise ValueError(f"No entry in the stack")
+            raise ValueError("No entry in the stack")
             # return -1
         else:
             return self.arr[self.end - 1]
 
     def pop(self):
-        print(f"pop()")
+        print("pop()")
         if self.end == 0:
-            raise ValueError(f"No entry in the stack to pop")
+            raise ValueError("No entry in the stack to pop")
         else:
             self.end -= 1
 
     def push(self, value: int):
         print(f"push({value})")
         if self.end == self.n:
-            print(f"  resizing underlying array ...")
+            print("  resizing underlying array ...")
             # need to resize, double in size.
             new_arr = self.arr + [-1] * self.n
             self.arr = new_arr
@@ -48,14 +46,9 @@ class myStack:
             self.n *= 2
         self.arr[self.end] = value
         self.end += 1
-        return
 
     def __str__(self) -> str:
-        return (
-            "MyStack : { "
-            + " -> ".join(list(map(lambda value: str(value), self.arr[: self.end])))
-            + " }"
-        )
+        return f"MyStack : {{ {' -> '.join(map(str, self.arr[: self.end]))} }}"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -84,7 +77,6 @@ def Test():
     print(s)
     s.pop()
     print(s)
-    pass
 
 
 Test()

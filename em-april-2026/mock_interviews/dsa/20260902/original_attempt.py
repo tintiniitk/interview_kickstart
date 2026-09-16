@@ -65,7 +65,7 @@ class LL:
 
 
 def max_consecutive_seq_length(nums) -> int:
-    n = len(nums)
+    # n = len(nums)
     max_seq = 0
     unique_nums = set(nums)
     max_num = max(unique_nums)
