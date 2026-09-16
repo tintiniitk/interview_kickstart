@@ -1,10 +1,16 @@
 #!/bin/bash
 
+set -euo pipefail
+
 # ==============================================================================
 # CONFIGURATION
 # ==============================================================================
 # List of directory names to skip entirely
 DISALLOW_LIST=("03630_Partition_Array_for_Maximum_XOR_and_AND" "00037_sudoku_solver")
+
+# Clear out all old log files
+echo "Clearing old log files ..."
+rm -f */run*.log
 
 # Max parallel jobs (defaults to number of CPU cores, fallback to 4)
 MAX_JOBS=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
@@ -28,7 +34,28 @@ printf "\n"
 # ==============================================================================
 # PARALLEL EXECUTION ENGINE
 # ==============================================================================
-find . -mindepth 1 -maxdepth 1 -type d -exec test -e "{}/Makefile" \; -print0 | while IFS= read -r -d '' dir; do
+test_patterns=()
+if [[ $# -gt 0 ]]; then
+    # Add each pattern with -name and OR (-o)
+    for pattern in "$@"; do
+        test_patterns+=(-iname "$pattern" -o)
+    done
+    unset 'test_patterns[${#test_patterns[@]}-1]'  # remove last -o
+fi
+
+# Construct and run the find command
+if [[ ${#test_patterns[@]} -gt 0 ]]; then
+    # With patterns
+    DIRS=$(find . -mindepth 1 -maxdepth 1 -type d \( "${test_patterns[@]}" \) \
+        -exec test -e "{}/Makefile" \; -printf "%p ")
+else
+    # Without patterns (match all first-level dirs)
+    DIRS=$(find . -mindepth 1 -maxdepth 1 -type d \
+        -exec test -e "{}/Makefile" \; -printf "%p ")
+fi
+# find . -mindepth 1 -maxdepth 1 -type d  -exec test -e "{}/Makefile" \; -print0 | while IFS= read -r -d '' dir; do
+
+for dir in ${DIRS} ; do
 
     # Throttle concurrency: Wait if active background jobs reach MAX_JOBS limit
     while [ $(jobs -r | wc -l) -ge $MAX_JOBS ]; do
