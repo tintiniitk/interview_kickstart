@@ -1,4 +1,5 @@
 from functools import cache
+from math import ceil
 
 
 class Solution:
@@ -22,7 +23,6 @@ class Solution:
 
 
 import sys
-from math import ceil
 
 from utils.context_manager import TimeoutException, time_limit
 from utils.pretty_test_runner import pretty_test_runner
