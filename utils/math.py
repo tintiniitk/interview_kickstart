@@ -34,20 +34,29 @@ def num2digits(num: int) -> list[int]:
     return [int(d) for d in str(num)]
 
 
-def pow_mod_base(x: int, y: int, mod_base: int) -> int:
+def pow_mod_base(x: int, y: int, mod_base: int = 1) -> int:
+    assert mod_base > 0
+    assert y >= 0
     if y == 0:
         return 1
     if y == 1:
-        return x
+        return x % mod_base
     if x == 0:
         return 0
     if y % 2 == 0:
-        return ((pow_mod_base(x, y // 2) % mod_base) ** 2) % mod_base
-    return ((((pow_mod_base(x, y // 2) % mod_base) ** 2) % mod_base) * x) % mod_base
+        return ((pow_mod_base(x, y // 2, mod_base) % mod_base) ** 2) % mod_base
+    return (
+        (((pow_mod_base(x, y // 2, mod_base) % mod_base) ** 2) % mod_base) * x
+    ) % mod_base
 
 
 def main():
-    pass
+    assert pow_mod_base(10, 5, 2) == 0
+    assert pow_mod_base(2, 3, 5) == 3
+    assert pow_mod_base(3, 2, 2) == 1
+    assert pow_mod_base(10, 100, 9) == 1
+    assert pow_mod_base(100, pow_mod_base(10, 1000, 1000000007), 10) == 0
+    assert pow_mod_base(10, 5000000000, 9) == 1
 
 
 if __name__ == "__main__":
