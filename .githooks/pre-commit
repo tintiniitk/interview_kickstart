@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+# Navigate to repo root
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT" || exit 1
+
+FAILED=0
+
+# Safely handle empty git tree on initial commits
+if git rev-parse --verify HEAD >/dev/null 2>&1; then
+    AGAINST="HEAD"
+else
+    AGAINST="$(git hash-object -t tree /dev/null)"
+fi
+
+# Get list of staged files being committed (Added, Copied, Modified)
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM "$AGAINST")
+
+echo "==> [1/2] Checking Python unit tests in utils/..."
+STAGED_UTILS=$(echo "$STAGED_FILES" | grep -E '^utils/.*\.py$')
+
+if [ -n "$STAGED_UTILS" ]; then
+    echo "Running tests for changed utils files:"
+    echo "$STAGED_UTILS" | sed 's/^/  - /'
+
+    echo "$STAGED_UTILS" | xargs -P 0 -I {} python3 {}
+    if [ $? -ne 0 ]; then
+        echo "❌ One or more tests in utils/ failed."
+        FAILED=1
+    else
+        echo "✅ Staged utils/ tests passed."
+    fi
+else
+    echo "ℹ️ No staged Python files in utils/. Skipping utils unit tests."
+fi
+
+echo ""
+echo "==> [2/2] Checking unsorted LeetCode tests..."
+UNSORTED_DIR="em-april-2026/dsa/leetcode_practice_problems/unsorted"
+
+# Check if any Python file under utils/ or unsorted/ is staged
+STAGED_TARGETS=$(echo "$STAGED_FILES" | grep -E "^(utils/|${UNSORTED_DIR}/).*\.py$")
+
+if [ -n "$STAGED_TARGETS" ]; then
+    if [ -f "${UNSORTED_DIR}/run_all.sh" ]; then
+        echo "Changes detected in utils/ or unsorted/. Executing run_all.sh..."
+
+        # Execute run_all.sh inside its native directory using a subshell
+        (
+            cd "$UNSORTED_DIR" || exit 1
+            bash ./run_all.sh
+        )
+        if [ $? -ne 0 ]; then
+            echo "❌ Script run_all.sh failed."
+            FAILED=1
+        else
+            echo "✅ All unsorted tests passed."
+        fi
+    else
+        echo "❌ Script ${UNSORTED_DIR}/run_all.sh not found."
+        FAILED=1
+    fi
+else
+    echo "ℹ️ No relevant Python files changed in utils/ or unsorted/. Skipping run_all.sh."
+fi
+
+echo ""
+if [ $FAILED -ne 0 ]; then
+    echo "⛔ Pre-commit checks failed. Commit aborted."
+    exit 1
+fi
+
+echo "🚀 All pre-commit checks passed successfully!"
+exit 0
