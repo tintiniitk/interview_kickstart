@@ -4,7 +4,7 @@ from utils.collections.BinaryTree import TreeNode
 
 
 class Solution:
-    def generateTrees(self, n: int) -> list[TreeNode | None]:
+    def generateTrees(self, n: int) -> list[TreeNode]:
         @cache
         def allSubtrees(start: int, end: int) -> list[TreeNode | None]:
             if start > end:
@@ -18,7 +18,12 @@ class Solution:
                         ret.append(TreeNode(i, l, r))
             return ret
 
-        return allSubtrees(1, n)
+        ret = []
+        intermediate = allSubtrees(1, n)
+        for t in intermediate:
+            assert t is not None
+            ret.append(t)
+        return ret
 
 
 import sys
@@ -28,7 +33,7 @@ from utils.pretty_test_runner import pretty_test_runner
 
 
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
-def Test(n: int, expected: list[TreeNode | None]) -> tuple[bool, str]:
+def Test(n: int, expected: list[TreeNode]) -> tuple[bool, str]:
     actual = Solution().generateTrees(n)
     if sorted(actual) != sorted(expected):
         return False, f"got={actual}, wanted={expected}"

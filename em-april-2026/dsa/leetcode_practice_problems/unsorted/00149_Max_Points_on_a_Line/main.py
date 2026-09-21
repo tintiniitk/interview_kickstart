@@ -9,7 +9,7 @@ class Solution:
 
         def line_from_2points(
             point1: list[int], point2: list[int]
-        ) -> tuple[int, int, int]:
+        ) -> tuple[float, float, float]:
             x1, y1 = point1[0], point1[1]
             x2, y2 = point2[0], point2[1]
             a, b, c = 0, 0, 0

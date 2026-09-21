@@ -42,9 +42,9 @@ from utils.time import format_minimal_seconds
 
 
 def main():
+    start = perf_counter()
     try:
         print("Running tests ...")
-        start = perf_counter()
         with time_limit(5):
             Test(n=10, expected=4)
             Test(n=0, expected=0)
