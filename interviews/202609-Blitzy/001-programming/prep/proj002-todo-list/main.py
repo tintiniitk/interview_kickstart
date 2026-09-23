@@ -3,7 +3,7 @@ from enum import Enum
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 
-DEFAULT_LIMIT = 10
+DEFAULT_GET_ITEMS_RESP_LIMIT = 0
 
 
 class ItemStatus(str, Enum):
@@ -13,7 +13,8 @@ class ItemStatus(str, Enum):
 
 
 class Item(BaseModel):
-    text: str = None
+    id: int
+    text: str
     status: ItemStatus = ItemStatus.NOT_STARTED
 
     def update_status(self, new_status: ItemStatus):
@@ -35,7 +36,18 @@ class Item(BaseModel):
 app = FastAPI(title="TODO List app")
 
 # db
-items_db: list[Item] = []
+items_db: dict[int, Item] = {}
+
+# counter
+next_item_id = 0
+
+
+class CreateItemRequest(BaseModel):
+    text: str
+
+
+class GetItemsRequest(BaseModel):
+    limit: int | None = DEFAULT_GET_ITEMS_RESP_LIMIT
 
 
 class UpdateItemStatusRequest(BaseModel):
@@ -43,69 +55,64 @@ class UpdateItemStatusRequest(BaseModel):
 
 
 @app.post("/items", response_model=Item, status_code=status.HTTP_201_CREATED)
-def create_item(item: Item) -> Item:
-    items_db.append(item)
-    return items_db[-1]
+def create_item(payload: CreateItemRequest) -> Item:
+    global next_item_id
+    id = next_item_id
+    next_item_id += 1  # Or we can use a UUID generator instead, if needed.
+    item = Item(id=id, text=payload.text)
+    items_db[id] = item
+    return item
 
 
 @app.delete("/items", status_code=status.HTTP_200_OK, response_model=list[Item])
 def delete_all_items():
     global items_db
-    items_db = []
-    return items_db
+    items_db = {}
+    return items_db.values()
 
 
 @app.delete("/items/{id}", status_code=status.HTTP_200_OK, response_model=list[Item])
 def delete_item(id: int) -> list[Item]:
-    if 0 <= id < len(items_db):
+    if id in items_db:
         del items_db[id]
-        return items_db
+        return items_db.values()
     raise HTTPException(
         status_code=404,
-        detail=f"Item-id {id} is not a valid id. There are total {len(items_db)} items right now, and id should be in range [0, {len(items_db)}).",
+        detail=f"No item found with id={id}",
     )
 
 
 @app.get("/items", response_model=list[Item])
-def get_items(limit: int = DEFAULT_LIMIT, start: int = 0) -> list[Item]:
+def get_items(payload: GetItemsRequest | None = None) -> list[Item]:
+    limit = payload.limit if payload is not None else DEFAULT_GET_ITEMS_RESP_LIMIT
     if not items_db:
-        if start != 0:
-            raise HTTPException(
-                status_code=422, detail="no items in the list currently"
-            )
-        if limit != DEFAULT_LIMIT:
-            raise HTTPException(
-                status_code=422, detail="no items in the list currently"
-            )
         return []
-    if 0 <= start < len(items_db):
-        if limit == 0:
-            return items_db[start:]
-        if 0 < limit:
-            return items_db[start : start + limit]
-        raise HTTPException(status_code=422, detail="limit is negative")
-    raise HTTPException(status_code=422, detail="start is either negative or too high")
+    if limit == 0:
+        return items_db.values()
+    if 0 < limit:
+        return items_db.values()[:limit]
+    raise HTTPException(status_code=422, detail="limit is negative")
 
 
 @app.get("/items/{id}", status_code=status.HTTP_200_OK, response_model=Item)
 def get_item(id: int) -> Item:
-    if 0 <= id < len(items_db):
+    if id in items_db:
         return items_db[id]
     raise HTTPException(
         status_code=404,
-        detail=f"Item-id {id} is not a valid id. There are total {len(items_db)} items right now, and id should be in range [0, {len(items_db)}).",
+        detail=f"No item found with id={id}",
     )
 
 
 @app.patch("/items/{id}", status_code=status.HTTP_200_OK, response_model=Item)
 def update_item_status(id: int, req: UpdateItemStatusRequest) -> Item:
-    if 0 <= id < len(items_db):
+    if id in items_db:
         item = items_db[id]
         item.update_status(req.status)
         return item
     raise HTTPException(
         status_code=404,
-        detail=f"Item-id {id} is not a valid id. There are total {len(items_db)} items right now, and id should be in range [0, {len(items_db)}).",
+        detail=f"No item found with id={id}",
     )
 
 
