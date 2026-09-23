@@ -1,4 +1,5 @@
 from enum import Enum
+from itertools import islice
 
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
@@ -48,6 +49,11 @@ class CreateItemRequest(BaseModel):
 
 class GetItemsRequest(BaseModel):
     limit: int | None = DEFAULT_GET_ITEMS_RESP_LIMIT
+    status: ItemStatus | None = None
+
+
+class DeleteItemsRequest(BaseModel):
+    status: ItemStatus | None = None
 
 
 class UpdateItemStatusRequest(BaseModel):
@@ -65,9 +71,21 @@ def create_item(payload: CreateItemRequest) -> Item:
 
 
 @app.delete("/items", status_code=status.HTTP_200_OK, response_model=list[Item])
-def delete_all_items():
+def delete_all_items(payload: DeleteItemsRequest | None = None):
     global items_db
-    items_db = {}
+    if payload:
+        status = payload.status
+        if status not in {
+            ItemStatus.NOT_STARTED,
+            ItemStatus.IN_PROGRESS,
+            ItemStatus.DONE,
+        }:
+            raise HTTPException(
+                status_code=422, detail="passed unknown status {status} for matching"
+            )
+        items_db = {id: item for id, item in items_db.items() if item.status != status}
+    else:
+        items_db = {}
     return items_db.values()
 
 
@@ -84,14 +102,31 @@ def delete_item(id: int) -> list[Item]:
 
 @app.get("/items", response_model=list[Item])
 def get_items(payload: GetItemsRequest | None = None) -> list[Item]:
-    limit = payload.limit if payload is not None else DEFAULT_GET_ITEMS_RESP_LIMIT
-    if not items_db:
-        return []
-    if limit == 0:
+    if payload:
+        if not items_db:
+            return []
+        limit = payload.limit
+        if limit < 0:
+            raise HTTPException(status_code=422, detail="limit is negative")
+        status = payload.status
+        if status is not None:
+            if status not in {
+                ItemStatus.NOT_STARTED,
+                ItemStatus.IN_PROGRESS,
+                ItemStatus.DONE,
+            }:
+                raise HTTPException(
+                    status_code=422, detail="passed unknown status {status} for matching"
+                )
+            ret = []
+            for item in items_db.values():
+                if item.status == status and (limit == 0 or len(ret) < limit):
+                    ret.append(item)
+            return ret
+        else:
+            return list(islice(items_db.values(), limit))
+    else:
         return items_db.values()
-    if 0 < limit:
-        return items_db.values()[:limit]
-    raise HTTPException(status_code=422, detail="limit is negative")
 
 
 @app.get("/items/{id}", status_code=status.HTTP_200_OK, response_model=Item)
