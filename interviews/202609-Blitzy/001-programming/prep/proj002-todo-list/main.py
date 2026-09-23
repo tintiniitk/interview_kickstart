@@ -6,23 +6,28 @@ from pydantic import BaseModel
 DEFAULT_LIMIT = 10
 
 
-class TodoListStatus(Enum):
-    NOT_STARTED = 0
-    IN_PROGRESS = 1
-    DONE = 2
+class ItemStatus(str, Enum):
+    NOT_STARTED = "not_started"
+    IN_PROGRESS = "in_progress"
+    DONE = "done"
 
 
 class Item(BaseModel):
     text: str = None
-    status: TodoListStatus = TodoListStatus.NOT_STARTED
+    status: ItemStatus = ItemStatus.NOT_STARTED
 
-    def __init__(self, text: str, status: TodoListStatus = TodoListStatus.NOT_STARTED):
-        super().__init__()
-        self.text = text
-        self.status = status
-
-    def update_status(self, new_status: TodoListStatus):
-        # TODO: validate status transition sequence.
+    def update_status(self, new_status: ItemStatus):
+        if new_status == ItemStatus.NOT_STARTED or (
+            self.status,
+            new_status,
+        ) not in {
+            (ItemStatus.NOT_STARTED, ItemStatus.IN_PROGRESS),
+            (ItemStatus.IN_PROGRESS, ItemStatus.DONE),
+        }:
+            raise HTTPException(
+                status_code=status.HTTP_412_PRECONDITION_FAILED,
+                detail=f"Moving from state {self.status} to {new_status} is not allowed",
+            )
         self.status = new_status
 
 
@@ -31,6 +36,10 @@ app = FastAPI(title="TODO List app")
 
 # db
 items_db: list[Item] = []
+
+
+class UpdateItemStatusRequest(BaseModel):
+    status: ItemStatus
 
 
 @app.post("/items", response_model=Item, status_code=status.HTTP_201_CREATED)
@@ -88,17 +97,16 @@ def get_item(id: int) -> Item:
     )
 
 
-# # not working as expected right now.
-# @app.patch("/items/{id}", status_code=status.HTTP_200_OK, response_model=Item)
-# def update_item_status(id: int, status: int) -> Item:
-#     if 0 <= id < len(items_db):
-#         item = items_db[id]
-#         item.update_status(TodoListStatus(status))
-#         return item
-#     raise HTTPException(
-#         status_code=404,
-#         detail=f"Item-id {id} is not a valid id. There are total {len(items_db)} items right now, and id should be in range [0, {len(items_db)}).",
-#     )
+@app.patch("/items/{id}", status_code=status.HTTP_200_OK, response_model=Item)
+def update_item_status(id: int, req: UpdateItemStatusRequest) -> Item:
+    if 0 <= id < len(items_db):
+        item = items_db[id]
+        item.update_status(req.status)
+        return item
+    raise HTTPException(
+        status_code=404,
+        detail=f"Item-id {id} is not a valid id. There are total {len(items_db)} items right now, and id should be in range [0, {len(items_db)}).",
+    )
 
 
 # home page
