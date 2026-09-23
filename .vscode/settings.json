@@ -11,5 +11,12 @@
     },
     "ruff.fixAll": true,
     // disable vim extension by default. It'll turn on automatically on Ctrl+Alt+v in editor.
-    "vim.disableExtension": true
+    "vim.disableExtension": true,
+    "python-envs.pythonProjects": [
+        {
+            "path": ".",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ]
 }
