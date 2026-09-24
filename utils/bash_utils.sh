@@ -1,8 +1,9 @@
+#!/bin/bash
 # This script is not for executing, but rather for sourcing from other commands.
 # This contains useful functions and config variables.
 
 # localhost config
-LOCALHOST=http://127.0.0.1:8000
+export LOCALHOST=http://127.0.0.1:8000
 
 # Define the runner function
 function run_and_log() {
