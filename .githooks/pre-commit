@@ -44,16 +44,11 @@ if [ -n "$STAGED_TARGETS" ]; then
     test_dirs_to_run= # default empty, for all.
     if ! (echo "${STAGED_TARGETS}" | grep utils); then
         # if there was no change in the utils, then only run the affected test directories.
-        test_dirs_to_run=
-        for STAGED_TARGET in ${STAGED_TARGETS}; do
-            test_dirs_to_run+=$(basename "$(dirname "${STAGED_TARGET}")")" "
-        done
-        # Removing the lone tailing space at the end.
-        test_dirs_to_run="${test_dirs_to_run% }"
-        # Convert space-separated list to line-separated one.
-        test_dirs_to_run=$(echo "${test_dirs_to_run}" | tr -s ' ' '\n' | sort | uniq | tr -s '\n' ' ')
-        # Removing the lone tailing space at the end.
-        test_dirs_to_run="${test_dirs_to_run% }"
+        test_dirs_to_run=$(
+            for target in ${STAGED_TARGETS}; do
+                basename "$(dirname "$target")"
+            done | sort -u | paste -sd' ' -
+        )
     fi
     if [ -f "${UNSORTED_DIR}/run_all.sh" ]; then
         echo "Changes detected in utils/ or unsorted/. Executing run_all.sh with argument \"${test_dirs_to_run}\" ..."
