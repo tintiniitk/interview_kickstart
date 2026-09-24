@@ -1,22 +1,9 @@
 {
-    "python.analysis.autoImportCompletions": true,
-    "python.analysis.languageServerMode": "default",
-    "[python]": {
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "charliermarsh.ruff",
-        "editor.codeActionsOnSave": {
-            "source.organizeImports.ruff": "explicit",
-            "source.fixAll.ruff": "explicit"
-        }
-    },
-    "ruff.fixAll": true,
-    // disable vim extension by default. It'll turn on automatically on Ctrl+Alt+v in editor.
-    "vim.disableExtension": true,
     "python-envs.pythonProjects": [
         {
             "path": ".",
             "envManager": "ms-python.python:venv",
             "packageManager": "ms-python.python:pip"
         }
-    ]
+    ],
 }
