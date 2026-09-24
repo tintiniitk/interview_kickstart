@@ -6,10 +6,8 @@ class Solution:
         for v1, v2 in zip_longest(
             map(int, version1.split(".")), map(int, version2.split(".")), fillvalue=0
         ):
-            if v1 < v2:
-                return -1
-            elif v2 < v1:
-                return 1
+            if v1 != v2:
+                return -1 if v1 < v2 else 1
         return 0
 
 
