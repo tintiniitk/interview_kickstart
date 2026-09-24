@@ -86,14 +86,14 @@ def delete_all_items(payload: DeleteItemsRequest | None = None):
         items_db = {id: item for id, item in items_db.items() if item.status != status}
     else:
         items_db = {}
-    return items_db.values()
+    return list(items_db.values())
 
 
 @app.delete("/items/{id}", status_code=status.HTTP_200_OK, response_model=list[Item])
 def delete_item(id: int) -> list[Item]:
     if id in items_db:
         del items_db[id]
-        return items_db.values()
+        return list(items_db.values())
     raise HTTPException(
         status_code=404,
         detail=f"No item found with id={id}",
@@ -106,7 +106,7 @@ def get_items(payload: GetItemsRequest | None = None) -> list[Item]:
         if not items_db:
             return []
         limit = payload.limit
-        if limit < 0:
+        if limit is not None and limit < 0:
             raise HTTPException(status_code=422, detail="limit is negative")
         status = payload.status
         if status is not None:
@@ -116,17 +116,20 @@ def get_items(payload: GetItemsRequest | None = None) -> list[Item]:
                 ItemStatus.DONE,
             }:
                 raise HTTPException(
-                    status_code=422, detail="passed unknown status {status} for matching"
+                    status_code=422,
+                    detail="passed unknown status {status} for matching",
                 )
             ret = []
             for item in items_db.values():
-                if item.status == status and (limit == 0 or len(ret) < limit):
+                if item.status == status and (
+                    limit is None or limit == 0 or len(ret) < limit
+                ):
                     ret.append(item)
             return ret
         else:
             return list(islice(items_db.values(), limit))
     else:
-        return items_db.values()
+        return list(items_db.values())
 
 
 @app.get("/items/{id}", status_code=status.HTTP_200_OK, response_model=Item)
