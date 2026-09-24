@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
-source $(dirname $0)/utils.sh
+# shellcheck disable=SC1091
+source "$(dirname "$0")"/utils.sh
 
 if [[ $# != 2 ]] ; then
     >&2 echo "expected exactly 2 arguments: <item_id> <new_status from in_progress, done>"

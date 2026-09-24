@@ -1,13 +1,14 @@
 #!/bin/bash
 set -e
-source $(dirname $0)/utils.sh
+# shellcheck disable=SC1091
+source "$(dirname "$0")"/utils.sh
 
-if [[ $# > 1 ]] ; then
+if [[ $# -gt 1 ]] ; then
     >&2 echo "At the most 1 arguments (both optional) expected: [<status>]"
     exit 1
 fi
 INPUT_DATA=""
-if [[ $# > 0 ]] ; then
+if [[ $# -gt 0 ]] ; then
     status=${1}
     INPUT_DATA+="\\\"status\\\": \\\"${status}\\\""
 fi

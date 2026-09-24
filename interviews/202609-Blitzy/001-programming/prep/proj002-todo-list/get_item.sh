@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
-source $(dirname $0)/utils.sh
+# shellcheck disable=SC1091
+source "$(dirname "$0")"/utils.sh
 
 if [[ $# != 1 ]] ; then
     >&2 echo "expected exactly 1 argument: <item_id>"
