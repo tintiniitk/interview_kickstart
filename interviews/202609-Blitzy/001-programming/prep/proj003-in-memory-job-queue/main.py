@@ -7,7 +7,6 @@ Requirements:
 
 """
 
-from collections import deque
 from datetime import UTC, datetime, timedelta
 from enum import Enum
 
@@ -28,7 +27,7 @@ class Job(BaseModel):
     start_time: datetime
     end_time: datetime
     status: JobStatus = JobStatus.QUEUED
-"""  """
+
 
 class JobCreationRequest(BaseModel):
     description: str
@@ -42,7 +41,6 @@ next_job_id = 1
 
 # DB
 jobs_db: dict[int, Job] = {}
-job_queue = deque([])
 
 # configuration
 AUTO_REMOVE_DONE_JOBS: bool = True
@@ -73,13 +71,14 @@ def create_job(payload: JobCreationRequest) -> Job:
             detail=r"duration_seconds is <= 0 in input data",
         )
 
-    # create a new job with the given details and right after (or latest now, whichever is later) the last scheduled job.
+    # create a new job with the given details and right after the last scheduled job or now, whichever is later.
     now = datetime.now(tz=UTC)
     start = now
-    if job_queue:
-        last_schedule_job = job_queue[-1]
-        if last_schedule_job in jobs_db and jobs_db[last_schedule_job].end_time > now:
-            start = jobs_db[last_schedule_job].end_time
+    if jobs_db:
+        # this returns the last inserted job in python 3.7+
+        last_schedule_job = list(jobs_db.values())[-1]
+        if last_schedule_job and last_schedule_job.end_time > now:
+            start = last_schedule_job.end_time
     end = start + timedelta(seconds=payload.duration_seconds)
     job = Job(
         id=get_next_job_id(),
@@ -91,17 +90,13 @@ def create_job(payload: JobCreationRequest) -> Job:
 
     # register this new job
     jobs_db[job.id] = job
-    job_queue.append(job.id)
     return job
 
 
 def update_statuses():
     cur_time = datetime.now(tz=UTC)
-    index = 0
-    while index < len(job_queue):
-        job_id = job_queue[index]
-        index += 1
-        job = jobs_db[job_id]
+    jobs_to_be_deleted = []
+    for job_id, job in jobs_db.items():
         if cur_time < job.start_time:
             job.status = JobStatus.QUEUED
         elif job.end_time > cur_time >= job.start_time:
@@ -109,9 +104,9 @@ def update_statuses():
         else:
             job.status = JobStatus.DONE
             if AUTO_REMOVE_DONE_JOBS:
-                job_queue.popleft()
-                del jobs_db[job_id]
-                index -= 1
+                jobs_to_be_deleted.append(job_id)
+    for job_to_be_deleted in jobs_to_be_deleted:
+        del jobs_db[job_to_be_deleted]
 
 
 @app.get(path="/jobs", response_model=list[Job])
@@ -139,7 +134,5 @@ def get() -> dict[str, str]:
 @app.delete(path="/jobs")
 def delete_all_jobs():
     global jobs_db
-    global job_queue
     jobs_db = {}
-    job_queue = []
     return "All jobs removed from queue."
