@@ -1,1 +1,0 @@
-../proj002-todo-list/start_server.sh
