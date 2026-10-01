@@ -40,6 +40,39 @@ class ListNode:
 LL = ListNode
 
 
+def ListNodeFromList(l: list[Any]) -> ListNode | None:
+    if not l:
+        return None
+    head = ListNode(l[0])
+    cur = head
+    for val in l[1:]:
+        cur.next = ListNode(val)
+        cur = cur.next
+    return head
+
+
+def ListOfNodesFromListNode(head: ListNode | None) -> list[ListNode]:
+    if not head:
+        return []
+    l = [head]
+    cur = head.next
+    while cur:
+        l.append(cur)
+        cur = cur.next
+    return l
+
+
+def ListFromListNode(head: ListNode | None) -> list[Any]:
+    if not head:
+        return []
+    l = [head]
+    cur = head.next
+    while cur:
+        l.append(cur.val)
+        cur = cur.next
+    return l
+
+
 def main():
     ll1 = LL(1)
     assert ll1
