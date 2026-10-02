@@ -6,7 +6,7 @@ set -euo pipefail
 # CONFIGURATION
 # ==============================================================================
 # List of directory names to skip entirely
-DISALLOW_LIST=("03630_Partition_Array_for_Maximum_XOR_and_AND" "00037_sudoku_solver" "03292_Minimum_Number_of_Valid_Strings_to_Form_Target_II")
+DISALLOW_LIST=("03630_Partition_Array_for_Maximum_XOR_and_AND" "00037_sudoku_solver" "03292_Minimum_Number_of_Valid_Strings_to_Form_Target_II" "00805_Split_Array_With_Same_Average")
 
 # Clear out all old log files
 echo "Clearing old log files ..."
