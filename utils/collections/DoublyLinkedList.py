@@ -25,6 +25,7 @@ class DoublyLinkedListNode:
         while cur:
             s = f"{cur.val} -> " + s
             cur = cur.prev
+        s = "[" + s + "]"
 
         return s
 

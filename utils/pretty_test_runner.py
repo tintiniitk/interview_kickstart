@@ -14,11 +14,20 @@ def truncate_param(arg, max_str=100, max_seq=10):
     if isinstance(arg, str):
         return "'" + arg + "'" if len(arg) <= max_str else "'" + arg[:max_str] + "...'"
     elif isinstance(arg, (list, tuple, set)):
-        truncated_seq = [
-            truncate_param(item, max_str, max_seq) for item in list(arg)[:max_seq]
-        ]
+        truncated_seq = []
         if len(arg) > max_seq:
+            truncated_seq = [
+                truncate_param(item, max_str, max_seq)
+                for item in list(arg)[: max_seq - 1]
+            ]
+            last_item = list(arg)[-1]
+            truncated_suffix_seq = truncate_param(last_item, max_str, max_seq)
             truncated_seq.append(f"... (+{len(arg) - max_seq} more)")
+            truncated_seq.append(f"{truncated_suffix_seq}")
+        else:
+            truncated_seq = [
+                truncate_param(item, max_str, max_seq) for item in list(arg)
+            ]
         return truncated_seq if not isinstance(arg, tuple) else tuple(truncated_seq)
     elif isinstance(arg, dict):
         truncated_dict = {

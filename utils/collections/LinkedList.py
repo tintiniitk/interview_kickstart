@@ -40,7 +40,7 @@ class ListNode:
 LL = ListNode
 
 
-def ListNodeFromList(l: list[Any]) -> ListNode | None:
+def ListNodeFromList(l: list[Any] | None) -> ListNode | None:
     if not l:
         return None
     head = ListNode(l[0])
