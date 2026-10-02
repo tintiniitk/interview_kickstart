@@ -37,7 +37,9 @@ printf "\n"
 test_patterns=()
 if [[ $# -gt 0 ]]; then
 	# Add each pattern with -name and OR (-o)
-	for pattern in "$@"; do
+	# shellcheck disable=SC2048
+	# shellcheck disable=SC2068
+	for pattern in $@; do
 		test_patterns+=(-iname "$pattern" -o)
 	done
 	unset 'test_patterns[${#test_patterns[@]}-1]' # remove last -o
