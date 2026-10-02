@@ -19,6 +19,7 @@ def remove_nth_node_from_end(n: int, head: ListNode | None) -> ListNode | None:
     """
     if not head or not head.next:
         return None
+    # get length of the list in l.
     l = 1
     cur = head.next
     while cur:
@@ -28,8 +29,9 @@ def remove_nth_node_from_end(n: int, head: ListNode | None) -> ListNode | None:
         return head.next
     before_deleted_node = head
     for _ in range(l - n - 1):
-        before_deleted_node = before_deleted_node.next
-    before_deleted_node.next = before_deleted_node.next.next
+        before_deleted_node = before_deleted_node.next if before_deleted_node else None
+    if before_deleted_node and before_deleted_node.next:
+        before_deleted_node.next = before_deleted_node.next.next
     return head
 
 
@@ -44,7 +46,17 @@ def Test(
     n: int, head: list[int] | None, expected: list[int] | None
 ) -> tuple[bool, str]:
     actual = remove_nth_node_from_end(n, ListNodeFromList(head))
-    if not ListNodeFromList(expected).eq(actual):
+    if expected is not None and actual is None:
+        return False, f"expected is {expected} and actual is None"
+    if expected is None and actual is not None:
+        return False, f"expected is None and actual is {actual}"
+    if expected is None and actual is None:
+        return True, ""
+    assert expected is not None
+    assert actual is not None
+    expected_list_node = ListNodeFromList(expected)
+    assert expected_list_node
+    if not expected_list_node.eq(actual):
         return False, f"got={actual}, wanted={expected}"
     return True, ""
 

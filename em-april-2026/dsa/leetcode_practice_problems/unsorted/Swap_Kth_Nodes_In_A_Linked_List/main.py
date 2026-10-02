@@ -54,7 +54,17 @@ def Test(
     head: list[int] | None, k: int, expected: list[int] | None
 ) -> tuple[bool, str]:
     actual = swap_nodes(ListNodeFromList(head), k)
-    if not actual.eq(ListNodeFromList(expected)):
+    if expected is not None and actual is None:
+        return False, f"expected is {expected} and actual is None"
+    if expected is None and actual is not None:
+        return False, f"expected is None and actual is {actual}"
+    if expected is None and actual is None:
+        return True, ""
+    assert expected is not None
+    assert actual is not None
+    expected_list_node = ListNodeFromList(expected)
+    assert expected_list_node
+    if not expected_list_node.eq(actual):
         return False, f"got={actual}, wanted={expected}"
     return True, ""
 

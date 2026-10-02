@@ -50,7 +50,17 @@ from utils.pretty_test_runner import pretty_test_runner
 @pretty_test_runner(time_limit_in_sec=0.025, stop_on_tc_failure=False)
 def Test(head: list[int], k: int, expected: list[int]) -> tuple[bool, str]:
     actual = reverse_linked_list_in_groups_of_k(ListNodeFromList(head), k)
-    if not ListNodeFromList(expected).eq(actual):
+    if expected is not None and actual is None:
+        return False, f"expected is {expected} and actual is None"
+    if expected is None and actual is not None:
+        return False, f"expected is None and actual is {actual}"
+    if expected is None and actual is None:
+        return True, ""
+    assert expected is not None
+    assert actual is not None
+    expected_list_node = ListNodeFromList(expected)
+    assert expected_list_node
+    if not expected_list_node.eq(actual):
         return False, f"got={actual}, wanted={expected}"
     return True, ""
 

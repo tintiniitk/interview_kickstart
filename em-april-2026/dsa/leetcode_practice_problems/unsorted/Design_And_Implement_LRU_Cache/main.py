@@ -9,7 +9,7 @@ from utils.collections.DoublyLinkedList import DLLNode
 #     prev: "DLLNode| None" = None
 
 
-cache_items: dict[int, int] = {}
+cache_items: dict[int, tuple[int, DLLNode]] = {}
 cache_capacity: int = 1
 keys_head: DLLNode | None = None
 keys_tail: DLLNode | None = None
@@ -30,7 +30,8 @@ def get(k: int) -> int:
         if node.next:
             node.next.prev = node.prev
         node.next = None
-        keys_tail.next = node
+        if keys_tail:
+            keys_tail.next = node
         node.prev = keys_tail
         keys_tail = node
         cache_items[k] = (v, keys_tail)
@@ -58,13 +59,16 @@ def set(k: int, v: int):
         if not keys_head:
             keys_head = keys_tail = node
         else:
+            assert keys_tail
             keys_tail.next = node
             node.prev = keys_tail
             keys_tail = keys_tail.next
+        assert keys_tail
         cache_items[k] = (v, keys_tail)
     else:
         # move this item at the end.
         _, node = cache_items[k]
+        assert node
         if node != keys_tail:
             if node.prev:
                 node.prev.next = node.next
@@ -73,9 +77,11 @@ def set(k: int, v: int):
             if node.next:
                 node.next.prev = node.prev
             node.next = None
-            keys_tail.next = node
+            if keys_tail:
+                keys_tail.next = node
             node.prev = keys_tail
             keys_tail = node
+        assert keys_tail is not None
         cache_items[k] = (v, keys_tail)
 
 
