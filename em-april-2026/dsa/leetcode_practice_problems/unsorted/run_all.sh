@@ -10,7 +10,7 @@ DISALLOW_LIST=("03630_Partition_Array_for_Maximum_XOR_and_AND" "00037_sudoku_sol
 
 # Clear out all old log files
 echo "Clearing old log files ..."
-rm -f */run*.log
+rm -f ./*/run*.log
 
 # Max parallel jobs (defaults to number of CPU cores, fallback to 4)
 MAX_JOBS=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
@@ -53,19 +53,18 @@ else
 	DIRS=$(find . -mindepth 1 -maxdepth 1 -type d \
 		-exec test -e "{}/Makefile" \; -printf "%p ")
 fi
-# find . -mindepth 1 -maxdepth 1 -type d  -exec test -e "{}/Makefile" \; -print0 | while IFS= read -r -d '' dir; do
 
 for dir in ${DIRS}; do
 
 	# Throttle concurrency: Wait if active background jobs reach MAX_JOBS limit
-	while [ $(jobs -r | wc -l) -ge $MAX_JOBS ]; do
+	while [ "$(jobs -r | wc -l)" -ge "$MAX_JOBS" ]; do
 		sleep 0.1
 	done
 
 	# Dispatch directory execution to a background subshell
 	(
 		dir_name=$(basename "$dir")
-		log_file_path="${dir}/${LOG_FILENAME}"
+		# log_file_path="${dir}/${LOG_FILENAME}"
 
 		start_time=$(date +"%H:%M:%S")
 		status="PASSED"
@@ -74,7 +73,7 @@ for dir in ${DIRS}; do
 		# ----------------------------------------------------------------------
 		# 1. DISALLOW LIST CHECK
 		# ----------------------------------------------------------------------
-		if [[ " ${DISALLOW_LIST[*]} " =~ " ${dir_name} " ]]; then
+		if [[ " ${DISALLOW_LIST[*]} " =~ ${dir_name} ]]; then
 			status="IGNORED"
 			reason="In disallow_list"
 			end_time=$(date +"%H:%M:%S")
@@ -126,7 +125,9 @@ for dir in ${DIRS}; do
 
 			# Step C: Log file inspection for 'error' or 'fail'
 			if grep -iqE "error|fail" "$LOG_FILENAME"; then
+				printf "ERROR: 'error' or 'fail' found in log file %s for dir %s\n" "$LOG_FILENAME" "$dir"
 				if [ $exec_status -eq 0 ]; then
+					printf "Returning exit code 104 for dir %s\n" "$dir"
 					exit 104 # Error/fail string found in logs despite 0 exit code
 				fi
 			fi
@@ -172,36 +173,36 @@ done
 # Block execution until all background workers have finished
 wait
 
-function generate_consolidated_summary_report() {
-	# ==============================================================================
-	# CONSOLIDATED SUMMARY REPORT
-	# ==============================================================================
-	printf "%.s=" {1..80}
-	printf "\n"
-	echo "                      CONSOLIDATED REPORT SUMMARY"
-	printf "%.s=" {1..80}
-	printf "\n"
-	printf "%-22s | %-8s | %-10s | %-10s | %-20s\n" "Subdirectory" "Status" "Start Time" "End Time" "Notes / Reason"
-	printf "%.s-" {1..80}
-	printf "\n"
+# function generate_consolidated_summary_report() {
+# 	# ==============================================================================
+# 	# CONSOLIDATED SUMMARY REPORT
+# 	# ==============================================================================
+# 	printf "%.s=" {1..80}
+# 	printf "\n"
+# 	echo "                      CONSOLIDATED REPORT SUMMARY"
+# 	printf "%.s=" {1..80}
+# 	printf "\n"
+# 	printf "%-22s | %-8s | %-10s | %-10s | %-20s\n" "Subdirectory" "Status" "Start Time" "End Time" "Notes / Reason"
+# 	printf "%.s-" {1..80}
+# 	printf "\n"
 
-	# Render summary table rows from stored entries
-	while IFS='|' read -r s_dir s_status s_start s_end s_reason; do
-		if [ "$s_status" = "PASSED" ]; then
-			printf "%-22s | \033[0;32m%-8s\033[0m | %-10s | %-10s | %-20s\n" \
-				"$s_dir" "$s_status" "$s_start" "$s_end" "Success"
-		elif [ "$s_status" = "IGNORED" ]; then
-			printf "%-22s | \033[0;33m%-8s\033[0m | %-10s | %-10s | %-20s\n" \
-				"$s_dir" "$s_status" "$s_start" "$s_end" "$s_reason"
-		else
-			printf "%-22s | \033[0;31m%-8s\033[0m | %-10s | %-10s | %-20s\n" \
-				"$s_dir" "$s_status" "$s_start" "$s_end" "$s_reason"
-		fi
-	done <"$SUMMARY_FILE"
+# 	# Render summary table rows from stored entries
+# 	while IFS='|' read -r s_dir s_status s_start s_end s_reason; do
+# 		if [ "$s_status" = "PASSED" ]; then
+# 			printf "%-22s | \033[0;32m%-8s\033[0m | %-10s | %-10s | %-20s\n" \
+# 				"$s_dir" "$s_status" "$s_start" "$s_end" "Success"
+# 		elif [ "$s_status" = "IGNORED" ]; then
+# 			printf "%-22s | \033[0;33m%-8s\033[0m | %-10s | %-10s | %-20s\n" \
+# 				"$s_dir" "$s_status" "$s_start" "$s_end" "$s_reason"
+# 		else
+# 			printf "%-22s | \033[0;31m%-8s\033[0m | %-10s | %-10s | %-20s\n" \
+# 				"$s_dir" "$s_status" "$s_start" "$s_end" "$s_reason"
+# 		fi
+# 	done <"$SUMMARY_FILE"
 
-	printf "%.s=" {1..80}
-	printf "\n\n"
-}
+# 	printf "%.s=" {1..80}
+# 	printf "\n\n"
+# }
 
 # generate_consolidated_summary_report()
 
