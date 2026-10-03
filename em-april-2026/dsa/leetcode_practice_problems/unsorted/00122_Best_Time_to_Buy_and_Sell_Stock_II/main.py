@@ -3,38 +3,32 @@ SENTINEL_HIGH = 10**4 + 1
 
 class Solution:
     def maxProfit(self, prices: list[int]) -> int:
+        if not prices:
+            return 0
         n = len(prices)
         if n == 1:
             return 0
-        last_purchase_price = SENTINEL_HIGH
-        quantity_held = 0
-        profit = 0
-        for i in range(n):
-            if quantity_held == 1:
-                # try to sell.
-                if i == n - 1:
-                    if prices[i] > last_purchase_price:
-                        # sell
-                        profit += prices[i] - last_purchase_price
-                        quantity_held = 0
-                elif (
-                    prices[i] > last_purchase_price
-                    and prices[i - 1] <= prices[i] > prices[i + 1]
-                ):
-                    profit += prices[i] - last_purchase_price
-                    quantity_held = 0
-            elif quantity_held == 0:
-                # try to purchase
-                if i == 0:
-                    if prices[i] < prices[i + 1]:
-                        quantity_held = 1
-                        last_purchase_price = prices[i]
-                elif i < n - 1 and prices[i - 1] >= prices[i] < prices[i + 1]:
-                    quantity_held = 1
-                    last_purchase_price = prices[i]
-            else:
-                raise ValueError(f"quantity_held not in {0, 1}")
-        return profit
+
+        prev_price = prices[0]
+        buy_price = prev_price if prev_price <= prices[1] else SENTINEL_HIGH
+        # if buy_price < SENTINEL_HIGH:
+        # print(f"buy on day#0 for {buy_price}")
+        total_profit = 0
+        for i in range(1, n - 1):
+            price = prices[i]
+            if prev_price <= price > prices[i + 1]:
+                profit = max(price - buy_price, 0)
+                total_profit += profit
+                # print(f"sold on day#{i} for profit={profit}, total_profit={total_profit}")
+                buy_price = SENTINEL_HIGH
+            if buy_price > price and prev_price >= price < prices[i + 1]:
+                buy_price = price
+                # print(f"buy on day#{i} for {buy_price}")
+            prev_price = price
+        profit = max(prices[n - 1] - buy_price, 0)
+        total_profit += profit
+        # print(f"sold on day#{n-1} for profit={profit}, total_profit={total_profit}")
+        return total_profit
 
 
 import sys
