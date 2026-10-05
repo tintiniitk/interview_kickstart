@@ -2,10 +2,12 @@ from random import random
 
 
 class ListNode:
-    val: int
+    val: tuple[float, "ListNode | None"]
     next: "ListNode | None" = None
 
-    def __init__(self, val: int, next: "ListNode | None" = None):
+    def __init__(
+        self, val: tuple[float, "ListNode | None"], next: "ListNode | None" = None
+    ):
         self.val = val
         self.next = next
 
@@ -14,7 +16,7 @@ class SkipList:
     def __init__(self):
         # Initialize the bottom level with a sentinel head node.
         # val contains: (value, down_pointer)
-        self.head = ListNode((float("-inf"), None))
+        self.head: ListNode = ListNode((float("-inf"), None))
 
     def insert(self, value: int) -> None:
         path = []
