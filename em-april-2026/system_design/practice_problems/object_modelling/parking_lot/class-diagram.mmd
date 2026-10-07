@@ -1,0 +1,73 @@
+classDiagram
+    class VehicleType {
+        <<enumeration>>
+        MOTORCYCLE
+        COMPACT
+        SUV
+        TRUCK
+    }
+
+    class SpotType {
+        <<enumeration>>
+        MOTORCYCLE
+        COMPACT
+        LARGE
+    }
+
+    class TicketStatus {
+        <<enumeration>>
+        ACTIVE
+        PAID
+    }
+
+    class Vehicle {
+        +license_plate: str
+        +type: VehicleType
+    }
+
+    class ParkingSpot {
+        +spot_id: str
+        +floor_number: int
+        +spot_type: SpotType
+        +is_occupied: bool
+        +occupy() void
+        +vacate() void
+    }
+
+    class Ticket {
+        +ticket_id: str
+        +spot_id: str
+        +license_plate: str
+        +entry_time: datetime
+        +status: TicketStatus
+        +mark_paid() void
+    }
+
+    class FeeStrategy {
+        <<interface>>
+        +calculate_fee(ticket: Ticket, exit_time: datetime) float
+    }
+
+    class HourlyFeeStrategy {
+        +hourly_rate: float
+        +calculate_fee(ticket: Ticket, exit_time: datetime) float
+    }
+
+    class ParkingLot {
+        +lot_id: str
+        +fee_strategy: FeeStrategy
+        +available_spots: Dict~SpotType, Deque~ParkingSpot~~
+        +active_spot_map: Dict~str, ParkingSpot~
+        +active_tickets: Dict~str, Ticket~
+        +add_spot(spot: ParkingSpot) void
+        +park_vehicle(vehicle: Vehicle) Ticket
+        +process_exit(ticket_id: str) float
+    }
+
+    FeeStrategy <|.. HourlyFeeStrategy : Implements
+    Vehicle *-- VehicleType : Composition
+    ParkingSpot *-- SpotType : Composition
+    Ticket *-- TicketStatus : Composition
+    ParkingLot o-- FeeStrategy : Aggregation
+    ParkingLot "1" *-- "*" ParkingSpot : Manages
+    ParkingLot "1" *-- "*" Ticket : Issues

@@ -1,0 +1,38 @@
++-----------------------------------------------------------------------------+
+|                                ParkingLot                                   |
++-----------------------------------------------------------------------------+
+| - lot_id: str                                                               |
+| - fee_strategy: FeeStrategy                                                 |
+| - available_spots: Dict[SpotType, Deque[ParkingSpot]]                        |
+| - active_spot_map: Dict[str, ParkingSpot]                                   |
+| - active_tickets: Dict[str, Ticket]                                         |
++-----------------------------------------------------------------------------+
+| + add_spot(spot: ParkingSpot) -> None                                       |
+| + park_vehicle(vehicle: Vehicle) -> Ticket                                  |
+| + process_exit(ticket_id: str) -> float                                     |
++-----------------------------------------------------------------------------+
+        | 1                                 | 1                             | 1
+        |                                   |                               |
+        | *                                 | *                             | 1
+        v                                   v                               v
++-----------------------+   +-----------------------+   +-----------------------+
+|      ParkingSpot      |   |        Ticket         |   |      FeeStrategy      |
++-----------------------+   +-----------------------+   |      <<interface>>    |
+| - spot_id: str        |   | - ticket_id: str      |   +-----------------------+
+| - floor_number: int   |   | - spot_id: str        |   | + calculate_fee(...)  |
+| - spot_type: SpotType |   | - license_plate: str  |   +-----------------------+
+| - is_occupied: bool   |   | - entry_time: datetime|               ^
++-----------------------+   | - status: TicketStatus|               |
+| + occupy() -> None    |   +-----------------------+               |
+| + vacate() -> None    |   | + mark_paid() -> None |               |
++-----------------------+   +-----------------------+               |
+            |                           |                           |
+            v                           v                           |
+    +---------------+           +----------------+         +--------------------+
+    |   SpotType    |           |  TicketStatus  |         | HourlyFeeStrategy  |
+    | <<enum>>      |           |  <<enum>>      |         +--------------------+
+    +---------------+           +----------------+         | - hourly_rate: float|
+    | MOTORCYCLE    |           | ACTIVE         |         +--------------------+
+    | COMPACT       |           | PAID           |         | + calculate_fee()  |
+    | LARGE         |           +----------------+         +--------------------+
+    +---------------+

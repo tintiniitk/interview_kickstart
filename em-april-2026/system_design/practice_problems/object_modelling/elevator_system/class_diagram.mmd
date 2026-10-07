@@ -1,0 +1,64 @@
+classDiagram
+    class Direction {
+        <<enumeration>>
+        UP
+        DOWN
+        IDLE
+    }
+
+    class ElevatorState {
+        <<enumeration>>
+        MOVING
+        STOPPED
+        MAINTENANCE
+    }
+
+    class DoorStatus {
+        <<enumeration>>
+        OPEN
+        CLOSED
+    }
+
+    class Request {
+        +source_floor: int
+        +destination_floor: int
+        +direction: Direction
+    }
+
+    class ElevatorCar {
+        +elevator_id: int
+        +current_floor: int
+        +direction: Direction
+        +state: ElevatorState
+        +door_status: DoorStatus
+        +up_min_heap: List~int~
+        +down_max_heap: List~int~
+        +add_floor_request(floor: int) void
+        +step() void
+        +open_doors() void
+        +close_doors() void
+    }
+
+    class ElevatorDispatcher {
+        <<interface>>
+        +select_best_elevator(elevators: List~ElevatorCar~, request: Request) ElevatorCar
+    }
+
+    class SCANDispatcher {
+        +select_best_elevator(elevators: List~ElevatorCar~, request: Request) ElevatorCar
+    }
+
+    class ElevatorController {
+        +elevators: List~ElevatorCar~
+        +dispatcher: ElevatorDispatcher
+        +handle_external_call(floor: int, direction: Direction) int
+        +handle_internal_select(elevator_id: int, floor: int) void
+        +step_all() void
+    }
+
+    ElevatorCar *-- Direction : Uses
+    ElevatorCar *-- ElevatorState : Uses
+    ElevatorCar *-- DoorStatus : Uses
+    ElevatorDispatcher <|.. SCANDispatcher : Implements
+    ElevatorController o-- ElevatorDispatcher : Aggregation
+    ElevatorController "1" *-- "*" ElevatorCar : Manages

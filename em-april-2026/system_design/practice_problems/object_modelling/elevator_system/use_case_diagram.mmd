@@ -1,0 +1,17 @@
+flowchart LR
+    Passenger((Passenger))
+    Admin((Building Admin))
+
+    subgraph Elevator_System ["Elevator System"]
+        UC1["Call Elevator (External Floor Panel)"]
+        UC2["Select Floor (Internal Elevator Panel)"]
+        UC3["Emergency Stop / Alarm"]
+        UC4["Set Maintenance Mode"]
+        UC5["Monitor Elevator Status"]
+    end
+
+    Passenger --> UC1
+    Passenger --> UC2
+    Passenger --> UC3
+    Admin --> UC4
+    Admin --> UC5
