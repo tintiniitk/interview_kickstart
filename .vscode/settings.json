@@ -6,4 +6,6 @@
             "packageManager": "ms-python.python:pip"
         }
     ],
+    "editor.find.autoFindInSelection": "always",
+    "python.REPL.enableREPLSmartSend": false,
 }
