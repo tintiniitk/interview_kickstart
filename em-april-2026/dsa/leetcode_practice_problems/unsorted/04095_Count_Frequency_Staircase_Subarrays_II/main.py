@@ -1,6 +1,11 @@
+from itertools import pairwise
+
+
 class Solution:
     def countStaircase(self, nums: list[int]) -> int:
         n = len(nums)
+        if not any(prev == next for prev, next in pairwise(nums)):
+            return n
         ret = n  # count of single-element-subarrays which are frequency staircases.
 
         for i in range(n - 1):
@@ -47,6 +52,9 @@ def Test(nums: list[int], expected: int) -> tuple[bool, str]:
     return True, ""
 
 
+from tc_x import tc as tc_x_tc
+
+
 def main():
     try:
         print("Running tests ...")
@@ -56,6 +64,7 @@ def main():
             Test(nums=[2, 3, 4, 4, 3, 4], expected=8)
             Test(nums=list(range(1, 50001)), expected=50000)
             # Test(nums=list(range(1, 316)) * 315, expected=50000)
+            Test(**tc_x_tc)
     except TimeoutException as te:
         print(f"Tests got timed out: {te}")
         sys.exit(1)
