@@ -5,6 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "bashdb",
+            "request": "launch",
+            "name": "Bash-Debug (Current file)",
+            "cwd": "${workspaceFolder}",
+            "program": "${file}",
+            "args": [],
+            "pathBash": "/bin/bash",
+            // "pathBashdb": "/usr/share/bashdb/bashdb",
+            // "pathBashdbLib": "/usr/share/bashdb",
+            "pathCat": "/bin/cat",
+            "pathMkfifo": "/usr/bin/mkfifo",
+            "pathPkill": "/usr/bin/pkill",
+            "showDebugOutput": true,
+            "terminalKind": "integrated"
+        },
+        {
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
