@@ -1,5 +1,7 @@
 # 4086. Minimum Interval Selection to Cover Target Intervals
 
+This was Q4 in weekly contest held on Oct 18, 2026 8:00 am UTC+5:30.
+
 https://leetcode.com/problems/minimum-interval-selection-to-cover-target-intervals/
 
 You are given two 2D integer arrays, availableIntervals and targetIntervals, each representing a list of closed intervals.
