@@ -10,7 +10,8 @@ class Solution:
             outgoingNeighbors[u].append([v, delay])
 
         numActiveIncomingNeighbors = [0] * n
-        INF = 10**12
+        INF = 10**16
+
         ret = [INF] * n
         ret[0] = 0
         isActive = [False] * n
